@@ -4,7 +4,7 @@
 _Bool json_str_cpy (const char *data, char **target);
 
 /* Checks if a response ok:true */
-_Bool is_okay (json_t *root, User_s *api_s);
+_Bool is_okay (json_t *root, void *api_s);
 
 /* Copy type from json object into a target */
 _Bool parse_str (json_t *root, char **target, char *field);
