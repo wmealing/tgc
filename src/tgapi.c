@@ -13,7 +13,7 @@ typedef struct
     size_t size;
 } http_response;
 
-CURL *tg_handle; /* curl handle */
+CURLSH *tg_handle; /* curl share handle */
 char *tg_token; /* api token */
 
 void tg_init (char *api_token)
@@ -22,16 +22,16 @@ void tg_init (char *api_token)
     ** Initializes the library with a token and curl handle
     ** Will be expanded to support threading later
     */
-    tg_handle = curl_easy_init();
+    tg_handle = curl_share_init ();
     tg_token = api_token;
 }
 
 void tg_cleanup (void)
 {
     /*
-     * Cleans up CURL handle.
+     * Cleans up CURL share handle.
      */
-    curl_easy_cleanup (tg_handle);
+    curl_share_cleanup (tg_handle);
 }
 
 size_t write_response (void *response, size_t size, size_t nmemb, void *write_struct)
@@ -64,30 +64,39 @@ _Bool tg_post (http_response *response, char *url, char *post)
      * Telegram is fine with no application/json headers
      */
 
-    extern CURL *tg_handle;
+    extern CURLSH *tg_handle;
     CURLcode tg_res;
+    CURL *curl_handle = curl_easy_init ();
+
+    if (!curl_handle)
+        return 0;
 
     response->data = NULL;
 
-    tg_res = curl_easy_setopt(tg_handle, CURLOPT_WRITEFUNCTION, write_response);
-    if(tg_res != CURLE_OK) goto curl_error;
-    tg_res = curl_easy_setopt(tg_handle, CURLOPT_WRITEDATA, (void *) response);
-    if(tg_res != CURLE_OK) goto curl_error;
+    tg_res = curl_easy_setopt (curl_handle, CURLOPT_SHARE, tg_handle);
+    if (tg_res != CURLE_OK) goto curl_error;
+    tg_res = curl_easy_setopt (curl_handle, CURLOPT_WRITEFUNCTION, write_response);
+    if (tg_res != CURLE_OK) goto curl_error;
+    tg_res = curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *) response);
+    if (tg_res != CURLE_OK) goto curl_error;
 
-    tg_res = curl_easy_setopt(tg_handle, CURLOPT_URL, url);
-    if(tg_res != CURLE_OK) goto curl_error;
-    tg_res = curl_easy_setopt(tg_handle, CURLOPT_POST, 1);
-    if(tg_res != CURLE_OK) goto curl_error;
-    tg_res = curl_easy_setopt(tg_handle, CURLOPT_POSTFIELDS, post);
-    if(tg_res != CURLE_OK) goto curl_error;
-    tg_res = curl_easy_perform(tg_handle);
-    if(tg_res != CURLE_OK) goto curl_error;
+    tg_res = curl_easy_setopt (curl_handle, CURLOPT_URL, url);
+    if (tg_res != CURLE_OK) goto curl_error;
+    tg_res = curl_easy_setopt (curl_handle, CURLOPT_POST, 1);
+    if (tg_res != CURLE_OK) goto curl_error;
+    tg_res = curl_easy_setopt (curl_handle, CURLOPT_POSTFIELDS, post);
+    if (tg_res != CURLE_OK) goto curl_error;
+    tg_res = curl_easy_perform (curl_handle);
+    if (tg_res != CURLE_OK) goto curl_error;
 
+    curl_easy_cleanup (curl_handle);
     return 1;
 
     curl_error:
-        if(response->data) free(response->data);
-        fprintf(stderr, "CURL: %s\n", curl_easy_strerror(tg_res));
+        if (response->data)
+            free (response->data);
+	curl_easy_cleanup (curl_handle);
+        fprintf (stderr, "CURL: %s\n", curl_easy_strerror (tg_res));
         return 0;
 }
 
@@ -97,28 +106,36 @@ _Bool tg_get (http_response *response, char *url)
      * HTTP get request wrapper
      */
 
-    extern CURL *tg_handle;
+    extern CURLSH *tg_handle;
     CURLcode tg_res;
+    CURL *curl_handle = curl_easy_init ();
+
+    if (!curl_handle)
+            return 0;
 
     response->data = NULL;
 
-    tg_res = curl_easy_setopt(tg_handle, CURLOPT_WRITEFUNCTION, write_response);
-    if(tg_res != CURLE_OK) goto curl_error;
-    tg_res = curl_easy_setopt(tg_handle, CURLOPT_WRITEDATA, (void *) response);
+    tg_res = curl_easy_setopt (curl_handle, CURLOPT_SHARE, tg_handle);
+    if (tg_res != CURLE_OK) goto curl_error;
+    tg_res = curl_easy_setopt (curl_handle, CURLOPT_WRITEFUNCTION, write_response);
+    if (tg_res != CURLE_OK) goto curl_error;
+    tg_res = curl_easy_setopt (curl_handle, CURLOPT_WRITEDATA, (void *) response);
+    if (tg_res != CURLE_OK) goto curl_error;
+
+    tg_res = curl_easy_setopt (curl_handle, CURLOPT_URL, url);
+    if (tg_res != CURLE_OK) goto curl_error;
+    tg_res = curl_easy_setopt (curl_handle, CURLOPT_HTTPGET, 1);
+    if (tg_res != CURLE_OK) goto curl_error;
+    tg_res = curl_easy_perform (curl_handle);
     if(tg_res != CURLE_OK) goto curl_error;
 
-    tg_res = curl_easy_setopt(tg_handle, CURLOPT_URL, url);
-    if(tg_res != CURLE_OK) goto curl_error;
-    tg_res = curl_easy_setopt(tg_handle, CURLOPT_HTTPGET, 1);
-    if(tg_res != CURLE_OK) goto curl_error;
-    tg_res = curl_easy_perform(tg_handle);
-    if(tg_res != CURLE_OK) goto curl_error;
-
+    curl_easy_cleanup (curl_handle);
     return 1;
 
     curl_error:
-        if(response->data) free(response->data);
-        fprintf(stderr, "CURL: %s\n", curl_easy_strerror(tg_res));
+        if (response->data)
+            free (response->data);
+        fprintf (stderr, "CURL: %s\n", curl_easy_strerror (tg_res));
         return 0;
 }
 
