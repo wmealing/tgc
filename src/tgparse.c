@@ -116,6 +116,23 @@ _Bool parse_int (json_t *root, void *target, char *field)
     return 1;
 }
 
+_Bool parse_bool (json_t *root, _Bool *target, char *field)
+{
+    /*
+     * Copies a bool from a JSON object to a target.
+     */
+
+    json_t *field_obj = json_object_get (root, field);
+
+    if (!field_obj)
+        return 0;
+
+    *target = json_boolean_value (field_obj);
+    json_decref (field_obj);
+
+    return 1;
+}
+
 _Bool user_parse (json_t *root, User_s *api_s)
 {
     /*
