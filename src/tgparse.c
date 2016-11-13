@@ -136,7 +136,7 @@ _Bool parse_bool (json_t *root, _Bool *target, char *field)
 _Bool user_parse (json_t *root, User_s *api_s)
 {
     /*
-     * Parses a user object
+     * Parses a User object
      */
 
     if (!root)
@@ -153,8 +153,11 @@ _Bool user_parse (json_t *root, User_s *api_s)
 _Bool chat_parse (json_t *root, Chat_s *api_s)
 {
     /*
-     * Parses a chat object
+     * Parses a Chat object
      */
+    
+    if (!root)
+        return 0;
     
     if (!parse_int (root, &api_s->id, "id")) return 0;
     if (!parse_str (root, &api_s->type, "type")) return 0;
@@ -165,6 +168,29 @@ _Bool chat_parse (json_t *root, Chat_s *api_s)
     parse_bool (root,
             &api_s->all_members_are_administrators,
             "all_members_are_administrators");
+
+    return 1;
+}
+
+_Bool messageentity_parse (json_t *root, MessageEntity_s *api_s)
+{
+    /*
+     * Parses a MessageEntity object
+     */
+
+    json_t *user;
+    
+    if (!root)
+        return 0;
+
+    if (!parse_str (root, &api_s->type, "type")) return 0;
+    if (!parse_int (root, &api_s->offset, "offset")) return 0;
+    if (!parse_int (root, &api_s->length, "length")) return 0;
+    parse_str (root, &api_s->url, "url");
+    
+    user = json_object_get (root, "user");
+    user_parse (user, api_s->user);
+    json_decref (user);
 
     return 1;
 }

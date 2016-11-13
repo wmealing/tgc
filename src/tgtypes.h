@@ -24,9 +24,6 @@ struct User_s
 
 struct Chat_s
 {
-    _Bool ok;
-    int error_code;
-    char *description;
     uint64_t id;
     char *type;
     char *title;
@@ -34,5 +31,14 @@ struct Chat_s
     char *first_name;
     char *last_name;
     _Bool all_members_are_administrators;
+};
+
+struct MessageEntity_s
+{
+    char *type;
+    unsigned int offset;
+    unsigned int length;
+    char *url;
+    User_s *user;
 };
 
