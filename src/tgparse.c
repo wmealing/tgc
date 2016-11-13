@@ -218,7 +218,29 @@ void MessagEntity_free (MessageEntity_s *api_s)
 {
     free (api_s->type);
     free (api_s->url);
-    User_free(api_s->user);
     free (api_s);
+    if (api_s->user)
+        User_free (api_s->user);
+}
+
+_Bool photosize (json_t *root, PhotoSize_s *api_s)
+{
+    /*
+     * Parses a PhotoSize object
+     */
+    if (!root)
+        return 0;
+
+    if (!parse_str (root, &api_s->file_id, "file_id")) return 0;
+    if (!parse_int (root, &api_s->width, "width")) return 0;
+    if (!parse_int (root, &api_s->height, "height")) return 0;
+    parse_int (root, &api_s->file_size, "file_size");
+
+    return 1;
+}
+
+void PhotoSize_free (PhotoSize_s *api_s)
+{
+    free (api_s->file_id);
 }
 

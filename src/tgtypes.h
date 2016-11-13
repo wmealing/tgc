@@ -4,6 +4,7 @@
 typedef struct User_s User_s;
 typedef struct Chat_s Chat_s;
 typedef struct MessageEntity_s MessageEntity_s;
+typedef struct PhotoSize_s PhotoSize_s;
 
 /*
  * User
@@ -40,5 +41,13 @@ struct MessageEntity_s
     unsigned int length;
     char *url;
     User_s *user;
+};
+
+struct PhotoSize_s
+{
+    char *file_id;
+    unsigned int width;
+    unsigned int height;
+    unsigned int file_size;
 };
 

@@ -171,10 +171,12 @@ tgcode getMe (User_s *api_s)
     /* Load the response */
     resp_obj = json_loads (response.data, 0, &json_err);
     free (response.data);
-    if (!resp_obj) return TG_JSONFAIL;
+    if (!resp_obj)
+        return TG_JSONFAIL;
 
     /* Check the response and get the result */
-    if (!is_okay (resp_obj, api_s)) return TG_NOTOKAY;
+    if (!is_okay (resp_obj, api_s))
+        return TG_NOTOKAY;
     result = json_object_get (resp_obj, "result");
 
     /* Parse the result */
