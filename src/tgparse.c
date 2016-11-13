@@ -150,6 +150,15 @@ _Bool user_parse (json_t *root, User_s *api_s)
     return 1;
 }
 
+void User_free (User_s *api_s)
+{
+    free (api_s->description);
+    free (api_s->first_name);
+    free (api_s->last_name);
+    free (api_s->username);
+    free (api_s);
+}
+
 _Bool chat_parse (json_t *root, Chat_s *api_s)
 {
     /*
@@ -170,6 +179,16 @@ _Bool chat_parse (json_t *root, Chat_s *api_s)
             "all_members_are_administrators");
 
     return 1;
+}
+
+void Chat_free (Chat_s *api_s)
+{
+    free (api_s->type);
+    free (api_s->title);
+    free (api_s->username);
+    free (api_s->first_name);
+    free (api_s->last_name);
+    free (api_s);
 }
 
 _Bool messageentity_parse (json_t *root, MessageEntity_s *api_s)
@@ -193,5 +212,13 @@ _Bool messageentity_parse (json_t *root, MessageEntity_s *api_s)
     json_decref (user);
 
     return 1;
+}
+
+void MessagEntity_free (MessageEntity_s *api_s)
+{
+    free (api_s->type);
+    free (api_s->url);
+    User_free(api_s->user);
+    free (api_s);
 }
 
