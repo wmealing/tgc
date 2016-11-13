@@ -130,7 +130,7 @@ tgcode getMe (User_s *api_s)
 
     char url[100];
     http_response response;
-    json_t *resp_obj;
+    json_t *resp_obj, *result;
     json_error_t json_err;
     _Bool success;
 
@@ -147,9 +147,17 @@ tgcode getMe (User_s *api_s)
     free (response.data);
     if (!resp_obj) return TG_JSONFAIL;
 
-    /* Parse the response */
-    success = user_parse (resp_obj, api_s);
+    /* Check the response and get the result */
+    if (!is_okay (resp_obj, api_s)) return TG_NOTOKAY;
+    result = json_object_get (resp_obj, "result");
+
+    /* Parse the result */
+    success = user_parse (result, api_s);
+
+    /* Clean up and return */
+    json_decref (result);
     json_decref (resp_obj);
+    
     if (success)
         return TG_OKAY;
     else

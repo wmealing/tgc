@@ -3,6 +3,7 @@
 /* Declarations  */
 typedef struct User_s User_s;
 typedef struct Chat_s Chat_s;
+typedef struct MessageEntity_s MessageEntity_s;
 
 /*
  * User
@@ -34,5 +35,4 @@ struct Chat_s
     char *last_name;
     _Bool all_members_are_administrators;
 };
-
 
