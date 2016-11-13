@@ -173,7 +173,7 @@ _Bool is_okay (json_t *root, tg_res *res)
     {
         const char *err_description;
 
-        res->ok = 0;
+        res->ok = TG_NOTOKAY;
 
         json_t *err_code_obj = json_object_get (root, "error_code");
         res->error_code = json_integer_value (err_code_obj);
@@ -240,7 +240,6 @@ tg_res getMe (User_s *api_s)
     http_response response;
     char *result_txt;
     json_t *result;
-
     tg_res res;
 
     /* Format URL */
