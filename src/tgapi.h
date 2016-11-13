@@ -19,6 +19,13 @@ typedef enum tgcode
     TG_PARSERFAIL
 } tgcode;
 
+typedef struct {
+    tgcode ok;
+    int error_code; 
+    char description[100];
+    json_error_t json_err;
+} tg_res;
+
 /*
  * Initialize the library with a token
  * Must be done before utilizing the library
@@ -40,4 +47,5 @@ void tg_cleanup (void);
  * Pass User_s
  */
 
-tgcode getMe (User_s *api_s);
+tg_res getMe (User_s *api_s);
+

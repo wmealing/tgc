@@ -21,51 +21,6 @@ _Bool json_str_cpy (const char *data, char **target)
     }
 }
 
-_Bool is_okay (json_t *root, void *api_s)
-{
-    /*
-     * Checks if ok:false in the telegram response and
-     * fills in relevant fields.
-     */
-
-    json_t *ok = json_object_get (root, "ok");
-    User_s *work_ptr = (User_s *) api_s;
-
-    if (!ok)
-        return 0;
-
-    if (json_boolean_value (ok))
-    {
-        work_ptr->ok = 1;
-        work_ptr->error_code = 0;
-        work_ptr->description = NULL;
-
-        json_decref (ok);
-        return 1;
-    }
-    else
-    {
-        const char *err_description;
-
-        work_ptr->ok = 0;
-
-        json_t *err_code_obj = json_object_get (root, "error_code");
-        work_ptr->error_code = json_integer_value (err_code_obj);
-
-        json_t *desc_obj = json_object_get (root, "description");
-        err_description = json_string_value (desc_obj);
-        if (err_description)
-            json_str_cpy (err_description, &work_ptr->description);
-        else
-            work_ptr->description = NULL;
-
-        json_decref (err_code_obj);
-        json_decref (desc_obj);
-        json_decref (ok);
-        return 0;
-    }
-}
-
 _Bool parse_str (json_t *root, char **target, char *field)
 {
     /*
