@@ -16,14 +16,23 @@ typedef struct
 CURLSH *tg_handle; /* curl share handle */
 char *tg_token; /* api token */
 
-void tg_init (char *api_token)
+_Bool tg_init (char *api_token)
 {
     /*
     ** Initializes the library with a token and curl handle
     ** Will be expanded to support threading later
     */
+    CURLSHcode res;
+
     tg_handle = curl_share_init ();
+    if (!tg_handle) return 0;
+    res = curl_share_setopt (tg_handle, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
+    if (res != CURLSHE_OK) return 0;
+    res = curl_share_setopt (tg_handle, CURLSHOPT_SHARE, CURL_LOCK_DATA_SSL_SESSION);
+    if (res != CURLSHE_OK) return 0;
     tg_token = api_token;
+
+    return 1;
 }
 
 void tg_cleanup (void)

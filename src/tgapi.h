@@ -24,7 +24,7 @@ typedef enum tgcode
  * Must be done before utilizing the library
  */
 
-void tg_init (char *api_token);
+_Bool tg_init (char *api_token);
 
 /*
  * Cleans up the library.
