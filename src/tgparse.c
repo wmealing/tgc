@@ -156,3 +156,28 @@ _Bool user_parse (json_t *root, User_s *api_s)
     return 1;
 }
 
+_Bool chat_parse (json_t *root, Chat_s *api_s)
+{
+    /*
+     * Parses a chat object
+     */
+
+    if (!is_okay (root, api_s))
+        return 0;
+
+    json_t *result = json_object_get (root, "result");
+    if (!result)
+        return 0;
+    
+    if (!parse_int (result, &api_s->id, "id")) return 0;
+    if (!parse_str (result, &api_s->type, "type")) return 0;
+    parse_str (result, &api_s->title, "title");
+    parse_str (result, &api_s->username, "username");
+    parse_str (result, &api_s->first_name, "first_name");
+    parse_str (result, &api_s->last_name, "last_name");
+    parse_bool (result, &api_s->all_members_are_administrators, "all_members_are_administrators");
+
+    json_decref (result);
+    return 1;
+}
+

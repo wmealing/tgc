@@ -13,4 +13,5 @@ _Bool parse_bool (json_t *root, _Bool *target, char *field);
 
 /* Parses a user object */
 _Bool user_parse (json_t *root, User_s *api_s);
+_Bool chat_parse (json_t *root, Chat_s *api_s);
 
