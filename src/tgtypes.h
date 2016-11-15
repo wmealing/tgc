@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <jansson.h>
 
 /* Declarations  */
 typedef struct User_s User_s;
@@ -14,10 +15,8 @@ typedef struct PhotoSize_s PhotoSize_s;
 
 struct User_s
 {
-    _Bool ok;
-    int error_code;
-    char *description;
-    uint64_t id;
+    _Bool *ok;
+    json_int_t *id;
     char *first_name;
     char *last_name;
     char *username;
@@ -25,20 +24,20 @@ struct User_s
 
 struct Chat_s
 {
-    uint64_t id;
+    json_int_t *id;
     char *type;
     char *title;
     char *username;
     char *first_name;
     char *last_name;
-    _Bool all_members_are_administrators;
+    _Bool *all_members_are_administrators;
 };
 
 struct MessageEntity_s
 {
     char *type;
-    unsigned int offset;
-    unsigned int length;
+    json_int_t *offset;
+    json_int_t *length;
     char *url;
     User_s *user;
 };
@@ -46,8 +45,8 @@ struct MessageEntity_s
 struct PhotoSize_s
 {
     char *file_id;
-    unsigned int width;
-    unsigned int height;
-    unsigned int file_size;
+    json_int_t *width;
+    json_int_t *height;
+    json_int_t *file_size;
 };
 

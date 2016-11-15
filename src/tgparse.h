@@ -5,8 +5,8 @@ _Bool json_str_cpy (const char *data, char **target);
 
 /* Copy type from json object into a target */
 _Bool parse_str (json_t *root, char **target, char *field);
-_Bool parse_int (json_t *root, void *target, char *field);
-_Bool parse_bool (json_t *root, _Bool *target, char *field);
+_Bool parse_int (json_t *root, json_int_t **target, char *field);
+_Bool parse_bool (json_t *root, _Bool **target, char *field);
 
 /* Parses a user object */
 _Bool user_parse (json_t *root, User_s *api_s);
