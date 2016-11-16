@@ -268,8 +268,7 @@ tg_res getMe (User_s *api_s)
     }
 
     /* Parse the result */
-    if (!user_parse (result, api_s))
-        res.ok = TG_PARSERFAIL;
+    user_parse (result, api_s, &res);
 
     /* Clean up and return */
     json_decref (result);

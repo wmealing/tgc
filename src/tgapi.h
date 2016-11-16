@@ -16,10 +16,12 @@ typedef enum tgcode
     /* Json Error */
     TG_JSONFAIL,
     /* Error parsing */
-    TG_PARSERFAIL
+    TG_PARSERFAIL,
+    /* Error allocating mem */
+    TG_ALLOCFAIL
 } tgcode;
 
-typedef struct {
+typedef struct tg_res {
     tgcode ok;
     int error_code; 
     char description[100];
