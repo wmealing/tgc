@@ -193,7 +193,7 @@ void MessagEntity_free (MessageEntity_s *api_s)
         User_free (api_s->user);
 }
 
-void photosize (json_t *root, PhotoSize_s *api_s, tg_res *res)
+void photosize_parse (json_t *root, PhotoSize_s *api_s, tg_res *res)
 {
     /*
      * Parses a PhotoSize object
