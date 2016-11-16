@@ -15,8 +15,6 @@ typedef enum tgcode
     TG_CURLFAIL,
     /* Json Error */
     TG_JSONFAIL,
-    /* Error parsing */
-    TG_PARSERFAIL,
     /* Error allocating mem */
     TG_ALLOCFAIL
 } tgcode;
