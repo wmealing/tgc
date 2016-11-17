@@ -8,6 +8,7 @@ typedef struct MessageEntity_s MessageEntity_s;
 typedef struct PhotoSize_s PhotoSize_s;
 typedef struct Audio_s Audio_s;
 typedef struct Document_s Document_s;
+typedef struct Sticker_s Sticker_s;
 
 /*
  * User
@@ -68,6 +69,16 @@ struct Document_s
     PhotoSize_s *thumb;
     char *file_name;
     char *mime_type;
+    json_int_t *file_size;
+};
+
+struct Sticker_s
+{
+    char *file_id;
+    json_int_t *width;
+    json_int_t *height;
+    PhotoSize_s *thumb;
+    char *emoji;
     json_int_t *file_size;
 };
 
