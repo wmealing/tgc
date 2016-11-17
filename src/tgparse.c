@@ -119,6 +119,7 @@ void user_parse (json_t *root, User_s *api_s, tg_res *res)
 {
     /*
      * Parses a User object
+     * https://core.telegram.org/bots/api/#user
      */
 
     parse_int (root, &api_s->id, "id", res);
@@ -141,6 +142,7 @@ void chat_parse (json_t *root, Chat_s *api_s, tg_res *res)
 {
     /*
      * Parses a Chat object
+     * https://core.telegram.org/bots/api/#chat
      */
     
     parse_int (root, &api_s->id, "id", res);
@@ -165,10 +167,16 @@ void Chat_free (Chat_s *api_s)
     free (api_s);
 }
 
+/*
+ * message_parse
+ * Message_free
+ */
+
 void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
 {
     /*
      * Parses a MessageEntity object
+     * https://core.telegram.org/bots/api/#messageentity
      */
 
     json_t *user = json_object_get (root, "user");
@@ -203,6 +211,7 @@ void photosize_parse (json_t *root, PhotoSize_s *api_s, tg_res *res)
 {
     /*
      * Parses a PhotoSize object
+     * https://core.telegram.org/bots/api/#photosize
      */
 
     parse_str (root, &api_s->file_id, "file_id", res);
@@ -223,6 +232,7 @@ void audio_parse (json_t *root, Audio_s *api_s, tg_res *res)
 {
     /*
      * Parses an Audio object
+     * https://core.telegram.org/bots/api/#audio
      */
     
     parse_str (root, &api_s->file_id, "file_id", res);
@@ -245,6 +255,11 @@ void Audio_free (Audio_s *api_s)
 
 void document_parse (json_t *root, Document_s *api_s, tg_res *res)
 {
+    /*
+     * Parses a Document object
+     * https://core.telegram.org/bots/api/#document
+     */
+    
     json_t *thumb = json_object_get (root, "thumb");
 
     parse_str (root, &api_s->file_id, "file_id", res);
