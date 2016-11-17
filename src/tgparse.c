@@ -213,3 +213,27 @@ void PhotoSize_free (PhotoSize_s *api_s)
     free (api_s->file_size);
 }
 
+void audio_parse (json_t *root, Audio_s *api_s, tg_res *res)
+{
+    /*
+     * Parses an Audio object
+     */
+    
+    parse_str (root, &api_s->file_id, "file_id", res);
+    parse_int (root, &api_s->duration, "duration", res);
+    parse_str (root, &api_s->performer, "performer", res);
+    parse_str (root, &api_s->title, "title", res);
+    parse_str (root, &api_s->mime_type, "mime_type", res);
+    parse_int (root, &api_s->file_size, "file_size", res);
+}
+
+void Audio_free (Audio_s *api_s)
+{
+    free (api_s->file_id);
+    free (api_s->duration);
+    free (api_s->performer);
+    free (api_s->title);
+    free (api_s->mime_type);
+    free (api_s->file_size);
+}
+

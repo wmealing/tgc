@@ -1,4 +1,4 @@
-CFLAGS = -ansi -pedantic -Wall -Werror -Wundef -Wstrict-prototypes -g -fPIC -std=c11 -ofast
+CFLAGS = -ansi -pedantic -Wall -Werror -Wundef -Wstrict-prototypes -g -fPIC -std=c11 -O2 -march=native
 DEPS = -lcurl -ljansson
 
 libtgapi.so: tgapi.o tgparse.o
