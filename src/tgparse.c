@@ -84,6 +84,34 @@ void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res)
     }
 }
 
+void parse_double (json_t *root, double **target, char *field, tg_res *res)
+{
+    json_t *field_obj = json_object_get (root, field);
+
+    if (!field_obj)
+    {
+        res->ok = TG_JSONFAIL;
+        *target = NULL;
+        return;
+    }
+
+    *target = malloc (sizeof (double));
+
+    if (*target)
+    {
+        **target = json_real_value (field_obj);
+        json_decref (field_obj);
+        
+        return;
+    }
+    else
+    {
+        json_decref (field_obj);
+        res->ok = TG_ALLOCFAIL;
+        return;
+    }
+}
+
 void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res)
 {
     /*
