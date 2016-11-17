@@ -10,6 +10,7 @@ typedef struct Audio_s Audio_s;
 typedef struct Document_s Document_s;
 typedef struct Sticker_s Sticker_s;
 typedef struct Video_s Video_s;
+typedef struct Voice_s Voice_s;
 
 /*
  * User
@@ -90,6 +91,14 @@ struct Video_s
     json_int_t *height;
     json_int_t *duration;
     PhotoSize_s *thumb;
+    char *mime_type;
+    json_int_t *file_size;
+};
+
+struct Voice_s
+{
+    char *file_id;
+    json_int_t *duration;
     char *mime_type;
     json_int_t *file_size;
 };
