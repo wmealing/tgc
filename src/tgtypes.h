@@ -9,6 +9,7 @@ typedef struct PhotoSize_s PhotoSize_s;
 typedef struct Audio_s Audio_s;
 typedef struct Document_s Document_s;
 typedef struct Sticker_s Sticker_s;
+typedef struct Video_s Video_s;
 
 /*
  * User
@@ -79,6 +80,17 @@ struct Sticker_s
     json_int_t *height;
     PhotoSize_s *thumb;
     char *emoji;
+    json_int_t *file_size;
+};
+
+struct Video_s
+{
+    char *file_id;
+    json_int_t *width;
+    json_int_t *height;
+    json_int_t *duration;
+    PhotoSize_s *thumb;
+    char *mime_type;
     json_int_t *file_size;
 };
 

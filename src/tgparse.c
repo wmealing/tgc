@@ -334,3 +334,36 @@ void Sticker_free (Sticker_s *api_s)
         PhotoSize_free (api_s->thumb);
 }
 
+void video_parse (json_t *root, Video_s *api_s, tg_res *res)
+{
+    json_t *thumb = json_object_get (root, "thumb");
+
+    parse_str (root, &api_s->file_id, "file_id", res);
+    parse_int (root, &api_s->width, "width", res);
+    parse_int (root, &api_s->height, "height", res);
+    parse_int (root, &api_s->duration, "duration", res);
+    parse_str (root, &api_s->mime_type, "mime_type", res);
+    parse_int (root, &api_s->file_size, "file_size", res);
+
+    if (thumb)
+    {
+        if (!alloc_obj (sizeof (PhotoSize_s), &api_s->thumb, res))
+            photosize_parse (thumb, api_s->thumb, res);
+        json_decref (thumb);
+    } else
+        api_s->thumb = NULL;
+}
+
+void Video_free (Video_s *api_s)
+{
+    free (api_s->file_id);
+    free (api_s->width);
+    free (api_s->height);
+    free (api_s->duration);
+    free (api_s->mime_type);
+    free (api_s->file_size);
+    
+    if (api_s->thumb)
+        PhotoSize_free (api_s->thumb);
+}
+
