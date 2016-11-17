@@ -178,11 +178,14 @@ void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
     parse_int (root, &api_s->length, "length", res);
     parse_str (root, &api_s->url, "url", res);
     
+    if (user)
+    {
     api_s->user = malloc (sizeof (User_s));
     if (api_s->user)
         user_parse (user, api_s->user, res);
-
     json_decref (user);
+    } else
+        api_s->user = NULL;
 }
 
 void MessagEntity_free (MessageEntity_s *api_s)
@@ -238,5 +241,24 @@ void Audio_free (Audio_s *api_s)
     free (api_s->title);
     free (api_s->mime_type);
     free (api_s->file_size);
+}
+
+void document_parse (json_t *root, Document_s *api_s, tg_res *res)
+{
+    json_t *thumb = json_object_get (root, "thumb");
+
+    parse_str (root, &api_s->file_id, "file_id", res);
+    parse_str (root, &api_s->file_name, "file_name", res);
+    parse_str (root, &api_s->mime_type, "mime_type", res);
+    parse_int (root, &api_s->file_size, "file_size", res);
+
+    if (thumb)
+    {
+    api_s->thumb = malloc (sizeof (PhotoSize_s));
+    if (api_s->thumb)
+        photosize_parse (root, api_s->thumb, res);
+    json_decref (thumb);
+    } else
+        api_s->thumb = NULL;
 }
 

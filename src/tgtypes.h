@@ -7,6 +7,7 @@ typedef struct Chat_s Chat_s;
 typedef struct MessageEntity_s MessageEntity_s;
 typedef struct PhotoSize_s PhotoSize_s;
 typedef struct Audio_s Audio_s;
+typedef struct Document_s Document_s;
 
 /*
  * User
@@ -57,6 +58,15 @@ struct Audio_s
     json_int_t *duration;
     char *performer;
     char *title;
+    char *mime_type;
+    json_int_t *file_size;
+};
+
+struct Document_s
+{
+    char *file_id;
+    PhotoSize_s *thumb;
+    char *file_name;
     char *mime_type;
     json_int_t *file_size;
 };

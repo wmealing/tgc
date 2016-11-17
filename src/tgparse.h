@@ -14,6 +14,7 @@ void chat_parse (json_t *root, Chat_s *api_s, tg_res *res);
 void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res);
 void photosize_parse (json_t *root, PhotoSize_s *api_s, tg_res *res);
 void audio_parse (json_t *root, Audio_s *api_s, tg_res *res);
+void document_parse (json_t *root, Document_s *api_s, tg_res *res);
 
 /* Type Free Wrappers */
 void User_free (User_s *api_s);
@@ -21,4 +22,5 @@ void Chat_free (Chat_s *api_s);
 void MessagEntity_free (MessageEntity_s *api_s);
 void PhotoSize_free (PhotoSize_s *api_s);
 void Audio_free (Audio_s *api_s);
+void Document_free (Document_s *api_s);
 
