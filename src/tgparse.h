@@ -8,6 +8,9 @@ void parse_str (json_t *root, char **target, char *field, tg_res *res);
 void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res);
 void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res);
 
+/* Allocs space for new type */
+_Bool alloc_obj (size_t obj_size, void *target, tg_res *res);
+
 /* Type parsers */
 void user_parse (json_t *root, User_s *api_s, tg_res *res);
 void chat_parse (json_t *root, Chat_s *api_s, tg_res *res);

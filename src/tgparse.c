@@ -115,6 +115,23 @@ void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res)
     }
 }
 
+_Bool alloc_obj (size_t obj_size, void *target, tg_res *res)
+{
+    /*
+     * Allocates memory for objects and sets res on failure
+     */
+
+    *(int **)target = malloc (obj_size);
+
+    if (*(int **)target)
+        return 0;
+    else
+    {
+        res->ok = TG_ALLOCFAIL;
+        return 1;
+    }
+}
+
 void user_parse (json_t *root, User_s *api_s, tg_res *res)
 {
     /*
@@ -188,10 +205,9 @@ void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
     
     if (user)
     {
-    api_s->user = malloc (sizeof (User_s));
-    if (api_s->user)
-        user_parse (user, api_s->user, res);
-    json_decref (user);
+        if (!alloc_obj (sizeof (User_s), &api_s->user, res))
+            user_parse (user, api_s->user, res);
+        json_decref (user);
     } else
         api_s->user = NULL;
 }
@@ -266,13 +282,12 @@ void document_parse (json_t *root, Document_s *api_s, tg_res *res)
     parse_str (root, &api_s->file_name, "file_name", res);
     parse_str (root, &api_s->mime_type, "mime_type", res);
     parse_int (root, &api_s->file_size, "file_size", res);
-
+    
     if (thumb)
     {
-    api_s->thumb = malloc (sizeof (PhotoSize_s));
-    if (api_s->thumb)
-        photosize_parse (root, api_s->thumb, res);
-    json_decref (thumb);
+        if (!alloc_obj (sizeof (PhotoSize_s), &api_s->thumb, res))
+            photosize_parse (thumb, api_s->thumb, res);
+        json_decref (thumb);
     } else
         api_s->thumb = NULL;
 }
@@ -284,7 +299,7 @@ void Document_free (Document_s *api_s)
     free (api_s->mime_type);
     free (api_s->file_size);
 
-    if (api_s->user)
-        User_free (api_s->user);
+    if (api_s->thumb)
+        PhotoSize_free (api_s->thumb);
 }
 
