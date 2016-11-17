@@ -277,3 +277,14 @@ void document_parse (json_t *root, Document_s *api_s, tg_res *res)
         api_s->thumb = NULL;
 }
 
+void Document_free (Document_s *api_s)
+{
+    free (api_s->file_id);
+    free (api_s->file_name);
+    free (api_s->mime_type);
+    free (api_s->file_size);
+
+    if (api_s->user)
+        User_free (api_s->user);
+}
+
