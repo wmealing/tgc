@@ -11,6 +11,7 @@ typedef struct Document_s Document_s;
 typedef struct Sticker_s Sticker_s;
 typedef struct Video_s Video_s;
 typedef struct Voice_s Voice_s;
+typedef struct Contact_s Contact_s;
 
 /*
  * User
@@ -101,5 +102,13 @@ struct Voice_s
     json_int_t *duration;
     char *mime_type;
     json_int_t *file_size;
+};
+
+struct Contact_s
+{
+    char *phone_number;
+    char *first_name;
+    char *last_name;
+    json_int_t *user_id;
 };
 

@@ -383,3 +383,19 @@ void Voice_free (Voice_s *api_s)
     free (api_s->file_size);
 }
 
+void contact_parse (json_t *root, Contact_s *api_s, tg_res *res)
+{
+    parse_str (root, &api_s->phone_number, "phone_number", res);
+    parse_str (root, &api_s->first_name, "first_name", res);
+    parse_str (root, &api_s->last_name, "last_name", res);
+    parse_int (root, &api_s->user_id, "user_id", res);
+}
+
+void Contact_free (Contact_s *api_s)
+{
+    free (api_s->phone_number);
+    free (api_s->first_name);
+    free (api_s->last_name);
+    free (api_s->user_id);
+}
+
