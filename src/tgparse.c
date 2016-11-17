@@ -26,7 +26,7 @@ void parse_str (json_t *root, char **target, char *field, tg_res *res)
         str_size = strlen (tmp_str) + 1;
         *target = malloc (str_size);
  
-        if (target)
+        if (*target)
         {
             strncpy (*target, tmp_str, str_size);
             json_decref (field_obj);
@@ -70,16 +70,16 @@ void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res)
 
     *target = malloc (sizeof (json_int_t));
 
-    if (!target)
+    if (*target)
     {
+        **target = json_integer_value (field_obj);
         json_decref (field_obj);
-        res->ok = TG_ALLOCFAIL;
         return;
     }
     else
     {
-        **target = json_integer_value (field_obj);
         json_decref (field_obj);
+        res->ok = TG_ALLOCFAIL;
         return;
     }
 }
@@ -100,17 +100,17 @@ void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res)
 
     *target = malloc (sizeof (_Bool));
 
-    if (!target)
+    if (*target)
     {
+        **target = json_boolean_value (field_obj);
         json_decref (field_obj);
-        res->ok = TG_ALLOCFAIL;
+
         return;
     }
     else
     {
-        **target = json_boolean_value (field_obj);
         json_decref (field_obj);
-        
+        res->ok = TG_ALLOCFAIL;
         return;
     }
 }
