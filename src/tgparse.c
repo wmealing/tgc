@@ -177,8 +177,11 @@ void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
     parse_int (root, &api_s->offset, "offset", res);
     parse_int (root, &api_s->length, "length", res);
     parse_str (root, &api_s->url, "url", res);
-    user_parse (user, api_s->user, res);
     
+    api_s->user = malloc (sizeof (User_s));
+    if (api_s->user)
+        user_parse (user, api_s->user, res);
+
     json_decref (user);
 }
 
