@@ -443,3 +443,30 @@ void Location_free (Location_s *api_s)
     free (api_s->latitude);
 }
 
+void venue_parse (json_t *root, Venue_s *api_s, tg_res *res)
+{
+    json_t *location = json_object_get (root, "location");
+
+    parse_str (root, &api_s->title, "title", res);
+    parse_str (root, &api_s->address, "address", res);
+    parse_str (root, &api_s->foursquare_id, "foursquare_id", res);
+
+    if (location)
+    {
+        if (!alloc_obj (sizeof (Location_s), &api_s->location, res))
+            location_parse (root, api_s->location, res);
+        json_decref (location);
+    } else
+        api_s->location = NULL;
+}
+
+void Venue_free (Venue_s *api_s)
+{
+    free (api_s->title);
+    free (api_s->address);
+    free (api_s->foursquare_id);
+
+    if (api_s->location)
+        Location_free (api_s->location);
+}
+

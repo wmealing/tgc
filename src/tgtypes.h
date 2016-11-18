@@ -13,6 +13,7 @@ typedef struct Video_s Video_s;
 typedef struct Voice_s Voice_s;
 typedef struct Contact_s Contact_s;
 typedef struct Location_s Location_s;
+typedef struct Venue_s Venue_s;
 
 /*
  * User
@@ -117,5 +118,13 @@ struct Location_s
 {
     double *longitude;
     double *latitude;
+};
+
+struct Venue_s
+{
+    Location_s *location;
+    char *title;
+    char *address;
+    char *foursquare_id;
 };
 
