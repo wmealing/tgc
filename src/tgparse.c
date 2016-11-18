@@ -86,6 +86,10 @@ void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res)
 
 void parse_double (json_t *root, double **target, char *field, tg_res *res)
 {
+    /*
+     * Copies a double from a JSON object to a target.
+     */
+
     json_t *field_obj = json_object_get (root, field);
 
     if (!field_obj)
@@ -425,5 +429,17 @@ void Contact_free (Contact_s *api_s)
     free (api_s->first_name);
     free (api_s->last_name);
     free (api_s->user_id);
+}
+
+void location_parse (json_t *root, Location_s *api_s, tg_res *res)
+{
+    parse_double (root, &api_s->longitude, "longitude", res);
+    parse_double (root, &api_s->latitude, "latitude", res);
+}
+
+void Location_free (Location_s *api_s)
+{
+    free (api_s->longitude);
+    free (api_s->latitude);
 }
 

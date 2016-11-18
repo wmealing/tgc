@@ -7,6 +7,7 @@ typedef struct tg_res tg_res;
 void parse_str (json_t *root, char **target, char *field, tg_res *res);
 void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res);
 void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res);
+void parse_double (json_t *root, double **target, char *field, tg_res *res);
 
 /* Allocs space for new type */
 _Bool alloc_obj (size_t obj_size, void *target, tg_res *res);

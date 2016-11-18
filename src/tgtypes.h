@@ -12,6 +12,7 @@ typedef struct Sticker_s Sticker_s;
 typedef struct Video_s Video_s;
 typedef struct Voice_s Voice_s;
 typedef struct Contact_s Contact_s;
+typedef struct Location_s Location_s;
 
 /*
  * User
@@ -110,5 +111,11 @@ struct Contact_s
     char *first_name;
     char *last_name;
     json_int_t *user_id;
+};
+
+struct Location_s
+{
+    double *longitude;
+    double *latitude;
 };
 
