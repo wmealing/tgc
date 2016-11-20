@@ -470,3 +470,48 @@ void Venue_free (Venue_s *api_s)
         Location_free (api_s->location);
 }
 
+void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *res)
+{
+    json_t *photos, *curr_photo;
+    photos = json_object_get (root, "photos");
+    size_t arr_size;
+
+    parse_int (root, &api_s->total_count, "total_count", res);
+
+    if (photos)
+    {
+        arr_size = json_array_size (photos);
+        if (!arr_size)
+        {
+            api_s->photos = NULL;
+            return;
+        }
+
+        if (!alloc_obj (sizeof (UserProfilePhotos_s) * arr_size, &api_s->photos, res))
+        {
+            for (int i = 0; i < arr_size; i++)
+            {
+                curr_photo = json_array_get (photos, i);
+                photosize_parse (curr_photo, api_s->photos[i], res);
+                json_decref (curr_photo);
+            }
+        }
+        json_decref (photos);
+    } else 
+        api_s->photos = NULL;
+}
+
+void UserProfilePhotos_free (UserProfilePhotos_s *api_s)
+{
+    free (api_s->total_count);
+    
+    if (api_s->photos)
+    {
+        size_t arr_size = sizeof (api_s->photos) / sizeof (UserProfilePhotos_s);
+
+        for (int i = 0; i < arr_size; i++)
+            PhotoSize_free (api_s->photos[i]);
+        free (api_s->photos);
+    }
+}
+

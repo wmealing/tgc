@@ -14,6 +14,7 @@ typedef struct Voice_s Voice_s;
 typedef struct Contact_s Contact_s;
 typedef struct Location_s Location_s;
 typedef struct Venue_s Venue_s;
+typedef struct UserProfilePhotos_s UserProfilePhotos_s;
 
 /*
  * User
@@ -126,5 +127,11 @@ struct Venue_s
     char *title;
     char *address;
     char *foursquare_id;
+};
+
+struct UserProfilePhotos_s
+{
+    json_int_t *total_count;
+    PhotoSize_s **photos;
 };
 
