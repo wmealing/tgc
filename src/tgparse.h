@@ -26,6 +26,7 @@ void contact_parse (json_t *root, Contact_s *api_s, tg_res *res);
 void location_parse (json_t *root, Location_s *api_s, tg_res *res);
 void venue_parse (json_t *root, Venue_s *api_s, tg_res *res);
 void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *res);
+void file_parse (json_t *root, File_s *api_s, tg_res *res);
 
 /* Type Free Wrappers */
 void User_free (User_s *api_s);
@@ -41,4 +42,5 @@ void Contact_free (Contact_s *api_s);
 void Location_free (Location_s *api_s);
 void Venue_free (Venue_s *api_s);
 void UserProfilePhotos_free (UserProfilePhotos_s *api_s);
+void File_free (File_s *api_s);
 

@@ -515,3 +515,17 @@ void UserProfilePhotos_free (UserProfilePhotos_s *api_s)
     }
 }
 
+void file_parse (json_t *root, File_s *api_s, tg_res *res)
+{
+    parse_str (root, &api_s->file_id, "file_id", res);
+    parse_int (root, &api_s->file_size, "file_size", res);
+    parse_str (root, &api_s->file_path, "file_path", res);
+}
+
+void File_free (File_s *api_s)
+{
+    free (api_s->file_id);
+    free (api_s->file_size);
+    free (api_s->file_path);
+}
+

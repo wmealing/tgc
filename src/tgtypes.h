@@ -15,6 +15,7 @@ typedef struct Contact_s Contact_s;
 typedef struct Location_s Location_s;
 typedef struct Venue_s Venue_s;
 typedef struct UserProfilePhotos_s UserProfilePhotos_s;
+typedef struct File_s File_s;
 
 /*
  * User
@@ -133,5 +134,12 @@ struct UserProfilePhotos_s
 {
     json_int_t *total_count;
     PhotoSize_s **photos;
+};
+
+struct File_s
+{
+    char *file_id;
+    json_int_t *file_size;
+    char *file_path;
 };
 
