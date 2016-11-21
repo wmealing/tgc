@@ -487,7 +487,7 @@ void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *
             return;
         }
 
-        if (!alloc_obj (sizeof (UserProfilePhotos_s) * arr_size, &api_s->photos, res))
+        if (!alloc_obj (sizeof (PhotoSize_s) * arr_size, &api_s->photos, res))
         {
             for (int i = 0; i < arr_size; i++)
             {
