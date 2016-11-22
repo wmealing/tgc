@@ -134,6 +134,7 @@ struct UserProfilePhotos_s
 {
     json_int_t *total_count;
     PhotoSize_s **photos;
+    size_t photos_len;
 };
 
 struct File_s

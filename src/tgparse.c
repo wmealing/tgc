@@ -268,6 +268,30 @@ void photosize_parse (json_t *root, PhotoSize_s *api_s, tg_res *res)
     parse_int (root, &api_s->file_size, "file_size", res);
 }
 
+void photosizearr_parse (json_t *root, PhotoSize_s ***api_s, size_t *array_size, tg_res *res)
+{
+    json_t *current_photo;
+    size_t mem_size;
+
+    *array_size = json_array_size (root);
+
+    if (*array_size)
+    {
+        mem_size = sizeof (PhotoSize_s) * *array_size;
+
+        if (!alloc_obj (mem_size, api_s, res))
+        {
+            for (int i = 0; i < *array_size; i++)
+            {
+                current_photo = json_array_get (root, i);
+                photosize_parse (current_photo, *api_s[i], res);
+                json_decref (current_photo);
+            }
+        }
+    } else
+        *api_s = NULL;
+}
+
 void PhotoSize_free (PhotoSize_s *api_s)
 {
     free (api_s->file_id);
@@ -472,33 +496,13 @@ void Venue_free (Venue_s *api_s)
 
 void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *res)
 {
-    json_t *photos, *curr_photo;
-    photos = json_object_get (root, "photos");
-    size_t arr_size;
+    json_t *photos;
 
     parse_int (root, &api_s->total_count, "total_count", res);
 
+    photos = json_object_get (root, "photos");
     if (photos)
-    {
-        arr_size = json_array_size (photos);
-        if (!arr_size)
-        {
-            api_s->photos = NULL;
-            return;
-        }
-
-        if (!alloc_obj (sizeof (PhotoSize_s) * arr_size, &api_s->photos, res))
-        {
-            for (int i = 0; i < arr_size; i++)
-            {
-                curr_photo = json_array_get (photos, i);
-                photosize_parse (curr_photo, api_s->photos[i], res);
-                json_decref (curr_photo);
-            }
-        }
-        json_decref (photos);
-    } else 
-        api_s->photos = NULL;
+        photosizearr_parse (photos, &api_s->photos, &api_s->photos_len, res);
 }
 
 void UserProfilePhotos_free (UserProfilePhotos_s *api_s)
