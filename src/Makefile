@@ -4,10 +4,7 @@ DEPS = -lcurl -ljansson
 libtgapi.so: tgapi.o tgparse.o
 	$(CC) $^ -shared -o $@ $(DEPS)
 
-tgapi.o: tgapi.c
-	$(CC) -c $(CFLAGS) $< -o $@
-
-tgparse.o: tgparse.c
+%.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
 install: libtgapi.so
@@ -23,5 +20,6 @@ uninstall:
 	rm /usr/include/tgparse.h
 
 clean:
-	rm -f *.o
-	rm -f *.so
+	rm -f tgapi.o
+	rm -f tgparse.o
+	rm -f libtgapi.so
