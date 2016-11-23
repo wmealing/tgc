@@ -284,6 +284,7 @@ void MessagEntity_free (MessageEntity_s *api_s)
     free (api_s);
     if (api_s->user)
         User_free (api_s->user);
+    free (api_s->user);
 }
 
 void photosize_parse (json_t *root, PhotoSize_s *api_s, tg_res *res)
@@ -395,6 +396,7 @@ void Document_free (Document_s *api_s)
 
     if (api_s->thumb)
         PhotoSize_free (api_s->thumb);
+    free (api_s->thumb);
 }
 
 void sticker_parse (json_t *root, Sticker_s *api_s, tg_res *res)
@@ -426,6 +428,7 @@ void Sticker_free (Sticker_s *api_s)
 
     if (api_s->thumb)
         PhotoSize_free (api_s->thumb);
+    free (api_s->thumb);
 }
 
 void video_parse (json_t *root, Video_s *api_s, tg_res *res)
@@ -459,6 +462,7 @@ void Video_free (Video_s *api_s)
     
     if (api_s->thumb)
         PhotoSize_free (api_s->thumb);
+    free (api_s->thumb);
 }
 
 void voice_parse (json_t *root, Voice_s *api_s, tg_res *res)
@@ -530,6 +534,7 @@ void Venue_free (Venue_s *api_s)
 
     if (api_s->location)
         Location_free (api_s->location);
+    free (api_s->location);
 }
 
 void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *res)
