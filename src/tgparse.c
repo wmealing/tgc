@@ -249,6 +249,13 @@ void messageentityarr_parse (json_t *root, MessageEntity_s ***api_s, size_t *arr
     json_t *current_entity;
     size_t mem_size;
 
+    if (!root)
+    {
+        *api_s = NULL;
+        *array_size = 0;
+        return;
+    }
+
     *array_size = json_array_size (root);
 
     if (*array_size)
@@ -296,6 +303,13 @@ void photosizearr_parse (json_t *root, PhotoSize_s ***api_s, size_t *array_size,
 {
     json_t *current_photo;
     size_t mem_size;
+
+    if (!root)
+    {
+        *api_s = NULL;
+        *array_size = 0;
+        return;
+    }
 
     *array_size = json_array_size (root);
 
@@ -525,13 +539,8 @@ void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *
     parse_int (root, &api_s->total_count, "total_count", res);
 
     photos = json_object_get (root, "photos");
-    if (photos)
-        photosizearr_parse (photos, &api_s->photos, &api_s->photos_len, res);
-    else
-    {
-        api_s->photos = NULL;
-        api_s->photos_len = 0;
-    }
+    photosizearr_parse (photos, &api_s->photos, &api_s->photos_len, res);
+    json_decref (photos);
 }
 
 void UserProfilePhotos_free (UserProfilePhotos_s *api_s)
