@@ -527,20 +527,20 @@ void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *
     photos = json_object_get (root, "photos");
     if (photos)
         photosizearr_parse (photos, &api_s->photos, &api_s->photos_len, res);
+    else
+    {
+        api_s->photos = NULL;
+        api_s->photos_len = 0;
+    }
 }
 
 void UserProfilePhotos_free (UserProfilePhotos_s *api_s)
 {
     free (api_s->total_count);
     
-    if (api_s->photos)
-    {
-        size_t arr_size = sizeof (api_s->photos) / sizeof (UserProfilePhotos_s);
-
-        for (int i = 0; i < arr_size; i++)
-            PhotoSize_free (api_s->photos[i]);
-        free (api_s->photos);
-    }
+    for (int i = 0; i < api_s->photos_len; i++)
+        PhotoSize_free (api_s->photos[i]);
+    free (api_s->photos);
 }
 
 void file_parse (json_t *root, File_s *api_s, tg_res *res)
