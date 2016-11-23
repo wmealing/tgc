@@ -17,6 +17,9 @@ typedef struct Venue_s Venue_s;
 typedef struct UserProfilePhotos_s UserProfilePhotos_s;
 typedef struct File_s File_s;
 
+typedef struct Game_s Game_s;
+typedef struct Animation_s Animation_s;
+
 /*
  * User
  * This object represents a Telegram user or bot.
@@ -142,5 +145,26 @@ struct File_s
     char *file_id;
     json_int_t *file_size;
     char *file_path;
+};
+
+struct Game_s
+{
+    char *title;
+    char *description;
+    PhotoSize_s **photo;
+    size_t photo_len;
+    char *text;
+    MessageEntity_s **text_entities;
+    size_t text_entities_len;
+    Animation_s *animation;
+};
+
+struct Animation_s
+{
+    char *file_id;
+    PhotoSize_s *thumb;
+    char *file_name;
+    char *mime_type;
+    json_int_t *file_size;
 };
 

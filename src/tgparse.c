@@ -566,3 +566,79 @@ void File_free (File_s *api_s)
     free (api_s->file_path);
 }
 
+void game_parse (json_t *root, Game_s *api_s, tg_res *res)
+{
+    json_t *photo, *text_entities, *animation;
+    
+    parse_str (root, &api_s->title, "title", res);
+    parse_str (root, &api_s->description, "description", res);
+    parse_str (root, &api_s->text, "text", res);
+
+    photo = json_object_get (root, "photo");
+    photosizearr_parse (photo, &api_s->photo, &api_s->photo_len, res);
+    json_decref (photo);
+
+    text_entities = json_object_get (root, "text_entities");
+    messageentityarr_parse (text_entities, &api_s->text_entities, &api_s->text_entities_len, res);
+    json_decref (text_entities);
+
+    animation = json_object_get (root, "animation");
+    if (animation)
+    {
+        if (!alloc_obj (sizeof (Animation_s), &api_s->animation, res))
+            animation_parse (animation, api_s->animation, res);
+        json_decref (animation);
+    } else
+        api_s->animation = NULL;
+}
+
+void Game_free (Game_s *api_s)
+{
+    free (api_s->title);
+    free (api_s->description);
+    free (api_s->text);
+
+    for (int i = 0; i < api_s->photo_len; i++)
+        PhotoSize_free (api_s->photo[i]);
+    free (api_s->photo);
+
+    for (int i = 0; i < api_s->text_entities_len; i++)
+        MessagEntity_free (api_s->text_entities[i]);
+    free (api_s->text_entities);
+
+    if (api_s->animation)
+        Animation_free (api_s->animation);
+    free (api_s->animation);
+}
+
+void animation_parse (json_t *root, Animation_s *api_s, tg_res *res)
+{
+    json_t *thumb;
+
+    parse_str (root, &api_s->file_id, "file_id", res);
+    parse_str (root, &api_s->file_name, "file_name", res);
+    parse_str (root, &api_s->mime_type, "mime_type", res);
+    parse_int (root, &api_s->file_size, "file_size", res);
+
+    thumb = json_object_get (root, "thumb");
+    if (thumb)
+    {
+        if (!alloc_obj (sizeof (PhotoSize_s), &api_s->thumb, res))
+            photosize_parse (thumb, api_s->thumb, res);
+        json_decref (thumb);
+    } else
+        api_s->thumb = NULL;
+}
+
+void Animation_free (Animation_s *api_s)
+{
+    free (api_s->file_id);
+    free (api_s->file_name);
+    free (api_s->mime_type);
+    free (api_s->file_size);
+
+    if (api_s->thumb)
+        PhotoSize_free (api_s->thumb);
+    free (api_s->thumb);
+}
+

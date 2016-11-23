@@ -27,6 +27,8 @@ void location_parse (json_t *root, Location_s *api_s, tg_res *res);
 void venue_parse (json_t *root, Venue_s *api_s, tg_res *res);
 void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *res);
 void file_parse (json_t *root, File_s *api_s, tg_res *res);
+void game_parse (json_t *root, Game_s *api_s, tg_res *res);
+void animation_parse (json_t *root, Animation_s *api_s, tg_res *res);
 
 /* Array of type parsers */
 void photosizearr_parse (json_t *root, PhotoSize_s ***api_s, size_t *array_size, tg_res *res);
@@ -47,4 +49,6 @@ void Location_free (Location_s *api_s);
 void Venue_free (Venue_s *api_s);
 void UserProfilePhotos_free (UserProfilePhotos_s *api_s);
 void File_free (File_s *api_s);
+void Game_free (Game_s *api_s);
+void Animation_free (Animation_s *api_s);
 
