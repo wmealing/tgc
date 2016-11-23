@@ -244,6 +244,30 @@ void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
         api_s->user = NULL;
 }
 
+void messageentityarr_parse (json_t *root, MessageEntity_s ***api_s, size_t *array_size, tg_res *res)
+{
+    json_t *current_entity;
+    size_t mem_size;
+
+    *array_size = json_array_size (root);
+
+    if (*array_size)
+    {
+        mem_size = sizeof (MessageEntity_s) * *array_size;
+
+        if (!alloc_obj (mem_size, api_s, res))
+        {
+            for (int i = 0; i < *array_size; i++)
+            {
+                current_entity = json_array_get (root, i);
+                messageentity_parse (current_entity, *api_s[i], res);
+                json_decref (current_entity);
+            }
+        }
+    } else
+        *api_s = NULL;
+}
+
 void MessagEntity_free (MessageEntity_s *api_s)
 {
     free (api_s->type);

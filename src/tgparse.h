@@ -28,6 +28,10 @@ void venue_parse (json_t *root, Venue_s *api_s, tg_res *res);
 void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *res);
 void file_parse (json_t *root, File_s *api_s, tg_res *res);
 
+/* Array of type parsers */
+void photosizearr_parse (json_t *root, PhotoSize_s ***api_s, size_t *array_size, tg_res *res);
+void messageentityarr_parse (json_t *root, MessageEntity_s ***api_s, size_t *array_size, tg_res *res);
+
 /* Type Free Wrappers */
 void User_free (User_s *api_s);
 void Chat_free (Chat_s *api_s);
