@@ -184,7 +184,6 @@ void User_free (User_s *api_s)
     free (api_s->first_name);
     free (api_s->last_name);
     free (api_s->username);
-    free (api_s);
 }
 
 void chat_parse (json_t *root, Chat_s *api_s, tg_res *res)
@@ -213,7 +212,6 @@ void Chat_free (Chat_s *api_s)
     free (api_s->first_name);
     free (api_s->last_name);
     free (api_s->all_members_are_administrators);
-    free (api_s);
 }
 
 /*
@@ -281,7 +279,6 @@ void MessagEntity_free (MessageEntity_s *api_s)
     free (api_s->offset);
     free (api_s->length);
     free (api_s->url);
-    free (api_s);
     if (api_s->user)
         User_free (api_s->user);
     free (api_s->user);
