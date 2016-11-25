@@ -215,8 +215,8 @@ void Chat_free (Chat_s *api_s)
 }
 
 /*
- * message_parse
- * Message_free
+ * Parses a Message object
+ * https://core.telegram.org/bots/api#message
  */
 
 void message_parse (json_t *root, Message_s *api_s, tg_res *res)
@@ -404,6 +404,105 @@ void message_parse (json_t *root, Message_s *api_s, tg_res *res)
         api_s->pinned_message = NULL;
 }
 
+void Message_free (Message_s *api_s)
+{
+    free (api_s->message_id);
+    free (api_s->date);
+    free (api_s->chat);
+    free (api_s->forward_from_message_id);
+    free (api_s->forward_date);
+    free (api_s->edit_date);
+    free (api_s->text);
+    free (api_s->caption);
+    free (api_s->new_chat_title);
+    free (api_s->delete_chat_photo);
+    free (api_s->group_chat_created);
+    free (api_s->supergroup_chat_created);
+    free (api_s->channel_chat_created);
+    free (api_s->migrate_to_chat_id);
+    free (api_s->migrate_from_chat_id);
+
+    if (api_s->from)
+        User_free (api_s->from);
+    free (api_s->from);
+
+    if (api_s->chat)
+        Chat_free (api_s->chat);
+    free (api_s->chat);
+
+    if (api_s->forward_from)
+        User_free (api_s->forward_from);
+    free (api_s->forward_from);
+
+    if (api_s->forward_from_chat)
+        Chat_free (api_s->forward_from_chat);
+    free (api_s->forward_from_chat);
+
+    if (api_s->reply_to_message)
+        Message_free (api_s->reply_to_message);
+    free (api_s->reply_to_message);
+
+    if (api_s->entities)
+        MessageEntity_free (api_s->entities);
+    free (api_s->entities);
+
+    if (api_s->audio)
+        Audio_free (api_s->audio);
+    free (api_s->audio);
+
+    if (api_s->document)
+        Document_free (api_s->document);
+    free (api_s->document);
+
+    if (api_s->game)
+        Game_free (api_s->game);
+    free (api_s->game);
+
+    if (api_s->photo)
+        PhotoSize_free (api_s->photo);
+    free (api_s->photo);
+
+    if (api_s->sticker)
+        Sticker_free (api_s->sticker);
+    free (api_s->sticker);
+
+    if (api_s->video)
+        Video_free (api_s->video);
+    free (api_s->video);
+
+    if (api_s->voice)
+        Voice_free (api_s->voice);
+    free (api_s->voice);
+
+    if (api_s->contact)
+        Contact_free (api_s->contact);
+    free (api_s->contact);
+
+    if (api_s->location)
+        Location_free (api_s->location);
+    free (api_s->location);
+
+    if (api_s->venue)
+        Venue_free (api_s->venue);
+    free (api_s->venue);
+
+    if (api_s->new_chat_member)
+        User_free (api_s->new_chat_member);
+    free (api_s->new_chat_member);
+
+    if (api_s->left_chat_member)
+        User_free (api_s->left_chat_member);
+    free (api_s->left_chat_member);
+
+    if (api_s->new_chat_photo)
+        PhotoSize_free (api_s->new_chat_photo);
+    free (api_s->new_chat_photo);
+
+    if (api_s->pinned_message)
+        Message_free (api_s->pinned_message);
+    free (api_s->pinned_message);
+}
+
 void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
 {
     /*
@@ -457,7 +556,7 @@ void messageentityarr_parse (json_t *root, MessageEntity_s **api_s, size_t *arra
         *api_s = NULL;
 }
 
-void MessagEntity_free (MessageEntity_s *api_s)
+void MessageEntity_free (MessageEntity_s *api_s)
 {
     free (api_s->type);
     free (api_s->offset);
@@ -789,7 +888,7 @@ void Game_free (Game_s *api_s)
     free (api_s->photo);
 
     for (int i = 0; i < api_s->text_entities_len; i++)
-        MessagEntity_free (&api_s->text_entities[i]);
+        MessageEntity_free (&api_s->text_entities[i]);
     free (api_s->text_entities);
 
     if (api_s->animation)

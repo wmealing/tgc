@@ -38,7 +38,8 @@ void messageentityarr_parse (json_t *root, MessageEntity_s **api_s, size_t *arra
 /* Type Free Wrappers */
 void User_free (User_s *api_s);
 void Chat_free (Chat_s *api_s);
-void MessagEntity_free (MessageEntity_s *api_s);
+void Message_free (Message_s *api_s);
+void MessageEntity_free (MessageEntity_s *api_s);
 void PhotoSize_free (PhotoSize_s *api_s);
 void Audio_free (Audio_s *api_s);
 void Document_free (Document_s *api_s);
