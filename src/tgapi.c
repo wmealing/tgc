@@ -101,9 +101,9 @@ _Bool tg_post (http_response *response, char *url, char *post)
     curl_easy_cleanup (curl_handle);
     return CURLE_OK;
 
-    curl_error:
-        if (response->data)
-            free (response->data);
+curl_error:
+    if (response->data)
+        free (response->data);
 	curl_easy_cleanup (curl_handle);
         fprintf (stderr, "CURL: %s\n", curl_easy_strerror (curl_res));
         return 0;

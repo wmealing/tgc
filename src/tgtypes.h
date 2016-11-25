@@ -36,6 +36,12 @@ struct User_s
     char *username;
 };
 
+/*
+ * Chat
+ * This object represents a chat.
+ * https://core.telegram.org/bots/api/#chat
+ */
+
 struct Chat_s
 {
     json_int_t *id;
@@ -46,6 +52,12 @@ struct Chat_s
     char *last_name;
     _Bool *all_members_are_administrators;
 };
+
+/*
+ * Message
+ * This object represents a message.
+ * https://core.telegram.org/bots/api/#message
+ */
 
 struct Message_s
 {
@@ -88,6 +100,12 @@ struct Message_s
     Message_s *pinned_message;
 };
 
+/* 
+ * MessageEntity
+ * This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc.
+ * https://core.telegram.org/bots/api/#messageentity
+ */
+
 struct MessageEntity_s
 {
     char *type;
@@ -97,6 +115,12 @@ struct MessageEntity_s
     User_s *user;
 };
 
+/*
+ * PhotoSize
+ * This object represents one size of a photo or a file / sticker thumbnail.
+ * https://core.telegram.org/bots/api/#photosize
+ */
+
 struct PhotoSize_s
 {
     char *file_id;
@@ -104,6 +128,12 @@ struct PhotoSize_s
     json_int_t *height;
     json_int_t *file_size;
 };
+
+/*
+ * Audio
+ * This object represents an audio file to be treated as music by the Telegram clients.
+ * https://core.telegram.org/bots/api/#audio
+ */
 
 struct Audio_s
 {
@@ -115,6 +145,12 @@ struct Audio_s
     json_int_t *file_size;
 };
 
+/*
+ * Document
+ * This object represents a general file (as opposed to photos, voice messages and audio files).
+ * https://core.telegram.org/bots/api/#document
+ */
+
 struct Document_s
 {
     char *file_id;
@@ -123,6 +159,12 @@ struct Document_s
     char *mime_type;
     json_int_t *file_size;
 };
+
+/*
+ * Sticker
+ * This object represents a sticker.
+ * https://core.telegram.org/bots/api/#sticker
+ */
 
 struct Sticker_s
 {
@@ -133,6 +175,12 @@ struct Sticker_s
     char *emoji;
     json_int_t *file_size;
 };
+
+/*
+ * Video
+ * This object represents a video file.
+ * https://core.telegram.org/bots/api/#video
+ */
 
 struct Video_s
 {
@@ -145,6 +193,12 @@ struct Video_s
     json_int_t *file_size;
 };
 
+/*
+ * Voice
+ * This object represents a voice note.
+ * https://core.telegram.org/bots/api/#voice
+ */
+
 struct Voice_s
 {
     char *file_id;
@@ -152,6 +206,12 @@ struct Voice_s
     char *mime_type;
     json_int_t *file_size;
 };
+
+/*
+ * Contact
+ * This object represents a phone contact.
+ * https://core.telegram.org/bots/api/#contact
+ */
 
 struct Contact_s
 {
@@ -161,11 +221,23 @@ struct Contact_s
     json_int_t *user_id;
 };
 
+/*
+ * Location
+ * This object represents a point on the map.
+ * https://core.telegram.org/bots/api/#location
+ */
+
 struct Location_s
 {
     double *longitude;
     double *latitude;
 };
+
+/*
+ * Venue
+ * This object represents a venue.
+ * https://core.telegram.org/bots/api/#venue
+ */
 
 struct Venue_s
 {
@@ -175,6 +247,12 @@ struct Venue_s
     char *foursquare_id;
 };
 
+/*
+ * UserProfilePhotos
+ * This object represent a user's profile pictures.
+ * https://core.telegram.org/bots/api/#userprofilephotos
+ */
+
 struct UserProfilePhotos_s
 {
     json_int_t *total_count;
@@ -182,12 +260,28 @@ struct UserProfilePhotos_s
     size_t photos_len;
 };
 
+/*
+ * File
+ * This object represents a file ready to be downloaded.
+ * The file can be downloaded via the link https://api.telegram.org/file/bot<token>/<file_path>.
+ * It is guaranteed that the link will be valid for at least 1 hour.
+ * When the link expires, a new one can be requested by calling getFile.
+ * https://core.telegram.org/bots/api/#file
+ */
+
 struct File_s
 {
     char *file_id;
     json_int_t *file_size;
     char *file_path;
 };
+
+/*
+ * Game
+ * This object represents a game.
+ * Use BotFather to create and edit games, their short names will act as unique identifiers.
+ * https://core.telegram.org/bots/api/#game
+ */
 
 struct Game_s
 {
@@ -200,6 +294,12 @@ struct Game_s
     size_t text_entities_len;
     Animation_s *animation;
 };
+
+/*
+ * Animation
+ * This object represents an animation file to be displayed in the message containing a game.
+ * https://core.telegram.org/bots/api/#animation
+ */
 
 struct Animation_s
 {

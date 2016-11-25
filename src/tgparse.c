@@ -166,11 +166,6 @@ _Bool alloc_obj (size_t obj_size, void *target, tg_res *res)
 
 void user_parse (json_t *root, User_s *api_s, tg_res *res)
 {
-    /*
-     * Parses a User object
-     * https://core.telegram.org/bots/api/#user
-     */
-
     parse_int (root, &api_s->id, "id", res);
     parse_str (root, &api_s->first_name, "first_name", res);
     parse_str (root, &api_s->last_name, "last_name", res);
@@ -188,11 +183,6 @@ void User_free (User_s *api_s)
 
 void chat_parse (json_t *root, Chat_s *api_s, tg_res *res)
 {
-    /*
-     * Parses a Chat object
-     * https://core.telegram.org/bots/api/#chat
-     */
-    
     parse_int (root, &api_s->id, "id", res);
     parse_str (root, &api_s->type, "type", res);
     parse_str (root, &api_s->title, "title", res);
@@ -213,11 +203,6 @@ void Chat_free (Chat_s *api_s)
     free (api_s->last_name);
     free (api_s->all_members_are_administrators);
 }
-
-/*
- * Parses a Message object
- * https://core.telegram.org/bots/api#message
- */
 
 void message_parse (json_t *root, Message_s *api_s, tg_res *res)
 {
