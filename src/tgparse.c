@@ -9,10 +9,15 @@
 
 #define OBJ_FREE(obj, obj_freer) if (obj) { obj_freer (obj); free (obj); }
 
+#define OBJ_ARR_FREE(obj, obj_len, obj_freer)\
+    for (int i = 0; i < obj_len; i++)\
+        obj_freer (&obj[i]);\
+    free (obj)
+
 /*
  * Object parse helper
  */
-#define OBJ_PARSE(root_json_obj, json_obj, field, obj, obj_type, obj_parser) \
+#define OBJ_PARSE(root_json_obj, json_obj, field, obj, obj_type, obj_parser)\
     json_obj = json_object_get (root_json_obj, field);\
     if (json_obj)\
     {\
@@ -602,9 +607,7 @@ void UserProfilePhotos_free (UserProfilePhotos_s *api_s)
 {
     free (api_s->total_count);
     
-    for (int i = 0; i < api_s->photos_len; i++)
-        PhotoSize_free (&api_s->photos[i]);
-    free (api_s->photos);
+    OBJ_ARR_FREE (api_s->photos, api_s->photos_len, PhotoSize_free);
 }
 
 void file_parse (json_t *root, File_s *api_s, tg_res *res)
@@ -645,14 +648,9 @@ void Game_free (Game_s *api_s)
     free (api_s->title);
     free (api_s->description);
     free (api_s->text);
-
-    for (int i = 0; i < api_s->photo_len; i++)
-        PhotoSize_free (&api_s->photo[i]);
-    free (api_s->photo);
-
-    for (int i = 0; i < api_s->text_entities_len; i++)
-        MessageEntity_free (&api_s->text_entities[i]);
-    free (api_s->text_entities);
+    
+    OBJ_ARR_FREE (api_s->photo, api_s->photo_len, PhotoSize_free);
+    OBJ_ARR_FREE (api_s->text_entities, api_s->text_entities_len, MessageEntity_free);
 
     OBJ_FREE (api_s->animation, Animation_free);
 }
