@@ -427,7 +427,7 @@ void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
         api_s->user = NULL;
 }
 
-void messageentityarr_parse (json_t *root, MessageEntity_s ***api_s, size_t *array_size, tg_res *res)
+void messageentityarr_parse (json_t *root, MessageEntity_s **api_s, size_t *array_size, tg_res *res)
 {
     json_t *current_entity;
     size_t mem_size;
@@ -449,7 +449,7 @@ void messageentityarr_parse (json_t *root, MessageEntity_s ***api_s, size_t *arr
             for (int i = 0; i < *array_size; i++)
             {
                 current_entity = json_array_get (root, i);
-                messageentity_parse (current_entity, *api_s[i], res);
+                messageentity_parse (current_entity, &((*api_s)[i]), res);
                 json_decref (current_entity);
             }
         }
@@ -481,7 +481,7 @@ void photosize_parse (json_t *root, PhotoSize_s *api_s, tg_res *res)
     parse_int (root, &api_s->file_size, "file_size", res);
 }
 
-void photosizearr_parse (json_t *root, PhotoSize_s ***api_s, size_t *array_size, tg_res *res)
+void photosizearr_parse (json_t *root, PhotoSize_s **api_s, size_t *array_size, tg_res *res)
 {
     json_t *current_photo;
     size_t mem_size;
@@ -504,7 +504,7 @@ void photosizearr_parse (json_t *root, PhotoSize_s ***api_s, size_t *array_size,
             for (int i = 0; i < *array_size; i++)
             {
                 current_photo = json_array_get (root, i);
-                photosize_parse (current_photo, *api_s[i], res);
+                photosize_parse (current_photo, &((*api_s)[i]), res);
                 json_decref (current_photo);
             }
         }
@@ -734,7 +734,7 @@ void UserProfilePhotos_free (UserProfilePhotos_s *api_s)
     free (api_s->total_count);
     
     for (int i = 0; i < api_s->photos_len; i++)
-        PhotoSize_free (api_s->photos[i]);
+        PhotoSize_free (&api_s->photos[i]);
     free (api_s->photos);
 }
 
@@ -785,11 +785,11 @@ void Game_free (Game_s *api_s)
     free (api_s->text);
 
     for (int i = 0; i < api_s->photo_len; i++)
-        PhotoSize_free (api_s->photo[i]);
+        PhotoSize_free (&api_s->photo[i]);
     free (api_s->photo);
 
     for (int i = 0; i < api_s->text_entities_len; i++)
-        MessagEntity_free (api_s->text_entities[i]);
+        MessagEntity_free (&api_s->text_entities[i]);
     free (api_s->text_entities);
 
     if (api_s->animation)

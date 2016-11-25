@@ -60,12 +60,12 @@ struct Message_s
     Message_s *reply_to_message;
     json_int_t *edit_date;
     char *text;
-    MessageEntity_s **entities;
+    MessageEntity_s *entities;
     size_t entities_len;
     Audio_s *audio;
     Document_s *document;
     Game_s *game;
-    PhotoSize_s **photo;
+    PhotoSize_s *photo;
     size_t photo_len;
     Sticker_s *sticker;
     Video_s *video;
@@ -77,7 +77,7 @@ struct Message_s
     User_s *new_chat_member;
     User_s *left_chat_member;
     char *new_chat_title;
-    PhotoSize_s **new_chat_photo;
+    PhotoSize_s *new_chat_photo;
     size_t new_chat_photo_len;
     _Bool *delete_chat_photo;
     _Bool *group_chat_created;
@@ -178,7 +178,7 @@ struct Venue_s
 struct UserProfilePhotos_s
 {
     json_int_t *total_count;
-    PhotoSize_s **photos;
+    PhotoSize_s *photos;
     size_t photos_len;
 };
 
@@ -193,10 +193,10 @@ struct Game_s
 {
     char *title;
     char *description;
-    PhotoSize_s **photo;
+    PhotoSize_s *photo;
     size_t photo_len;
     char *text;
-    MessageEntity_s **text_entities;
+    MessageEntity_s *text_entities;
     size_t text_entities_len;
     Animation_s *animation;
 };
