@@ -15,6 +15,7 @@ _Bool alloc_obj (size_t obj_size, void *target, tg_res *res);
 /* Type parsers */
 void user_parse (json_t *root, User_s *api_s, tg_res *res);
 void chat_parse (json_t *root, Chat_s *api_s, tg_res *res);
+void message_parse (json_t *root, Message_s *api_s, tg_res *res);
 void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res);
 void photosize_parse (json_t *root, PhotoSize_s *api_s, tg_res *res);
 void audio_parse (json_t *root, Audio_s *api_s, tg_res *res);

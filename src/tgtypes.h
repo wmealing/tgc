@@ -3,6 +3,7 @@
 
 /* Declarations  */
 typedef struct User_s User_s;
+typedef struct Message_s Message_s;
 typedef struct Chat_s Chat_s;
 typedef struct MessageEntity_s MessageEntity_s;
 typedef struct PhotoSize_s PhotoSize_s;
@@ -44,6 +45,47 @@ struct Chat_s
     char *first_name;
     char *last_name;
     _Bool *all_members_are_administrators;
+};
+
+struct Message_s
+{
+    json_int_t *message_id;
+    User_s *from;
+    json_int_t *date;
+    Chat_s *chat;
+    User_s *forward_from;
+    Chat_s *forward_from_chat;
+    json_int_t *forward_from_message_id;
+    json_int_t *forward_date;
+    Message_s *reply_to_message;
+    json_int_t *edit_date;
+    char *text;
+    MessageEntity_s **entities;
+    size_t entities_len;
+    Audio_s *audio;
+    Document_s *document;
+    Game_s *game;
+    PhotoSize_s **photo;
+    size_t photo_len;
+    Sticker_s *sticker;
+    Video_s *video;
+    Voice_s *voice;
+    char *caption;
+    Contact_s *contact;
+    Location_s *location;
+    Venue_s *venue;
+    User_s *new_chat_member;
+    User_s *left_chat_member;
+    char *new_chat_title;
+    PhotoSize_s **new_chat_photo;
+    size_t new_chat_photo_len;
+    _Bool *delete_chat_photo;
+    _Bool *group_chat_created;
+    _Bool *supergroup_chat_created;
+    _Bool *channel_chat_created;
+    json_int_t *migrate_to_chat_id;
+    json_int_t *migrate_from_chat_id;
+    Message_s *pinned_message;
 };
 
 struct MessageEntity_s

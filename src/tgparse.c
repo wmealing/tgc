@@ -219,6 +219,191 @@ void Chat_free (Chat_s *api_s)
  * Message_free
  */
 
+void message_parse (json_t *root, Message_s *api_s, tg_res *res)
+{
+    json_t *field;
+
+    parse_int (root, &api_s->message_id, "message_id", res);
+    parse_int (root, &api_s->date, "date", res);
+    parse_int (root, &api_s->forward_from_message_id, "forward_from_message_id", res);
+    parse_int (root, &api_s->forward_date, "forward_date", res);
+    parse_int (root, &api_s->edit_date, "edit_date", res);
+    parse_str (root, &api_s->text, "text", res);
+    parse_str (root, &api_s->caption, "caption", res);
+    parse_str (root, &api_s->new_chat_title, "new_chat_title", res);
+    parse_bool (root, &api_s->delete_chat_photo, "delete_chat_photo", res);
+    parse_bool (root, &api_s->group_chat_created, "group_chat_created", res);
+    parse_bool (root, &api_s->supergroup_chat_created, "supergroup_chat_created", res);
+    parse_bool (root, &api_s->channel_chat_created, "channel_chat_created", res);
+    parse_int (root, &api_s->migrate_to_chat_id, "migrate_to_chat_id", res);
+    parse_int (root, &api_s->migrate_from_chat_id, "migrate_from_chat_id", res);
+
+    field = json_object_get (root, "entities");
+    messageentityarr_parse (field, &api_s->entities, &api_s->entities_len, res);
+    json_decref (field);
+
+    field = json_object_get (root, "photo");
+    photosizearr_parse (field, &api_s->photo, &api_s->photo_len, res);
+    json_decref (field);
+
+    field = json_object_get (root, "new_chat_photo");
+    photosizearr_parse (field, &api_s->new_chat_photo, &api_s->new_chat_photo_len, res);
+    json_decref (field);
+
+    field = json_object_get (root, "from");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (User_s), &api_s->from, res))
+            user_parse (field, api_s->from, res);
+        json_decref (field);
+    } else
+        api_s->from = NULL;
+
+    field = json_object_get (root, "chat");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (Chat_s), &api_s->chat, res))
+            chat_parse (field, api_s->chat, res);
+        json_decref (field);
+    } else
+        api_s->chat = NULL;
+
+    field = json_object_get (root, "forward_from");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (User_s), &api_s->forward_from, res))
+            user_parse (field, api_s->forward_from, res);
+        json_decref (field);
+    } else 
+        api_s->forward_from = NULL;
+
+    field = json_object_get (root, "forward_from_chat");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (Chat_s), &api_s->forward_from_chat, res))
+            chat_parse (field, api_s->forward_from_chat, res);
+        json_decref (field);
+    } else
+        api_s->forward_from_chat = NULL;
+
+    field = json_object_get (root, "reply_to_message");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (Message_s), &api_s->reply_to_message, res))
+            message_parse (field, api_s->reply_to_message, res);
+        json_decref (field);
+    } else
+        api_s->reply_to_message = NULL;
+
+    field = json_object_get (root, "audio");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (Audio_s), &api_s->audio, res))
+            audio_parse (field, api_s->audio, res);
+        json_decref (field);
+    } else
+        api_s->audio = NULL;
+
+    field = json_object_get (root, "document");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (Document_s), &api_s->document, res))
+            document_parse (field, api_s->document, res);
+        json_decref (field);
+    } else
+        api_s->document = NULL;
+
+    field = json_object_get (root, "game");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (Game_s), &api_s->game, res))
+            game_parse (field, api_s->game, res);
+        json_decref (field);
+    } else
+        api_s->game = NULL;
+
+    field = json_object_get (root, "sticker");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (Sticker_s), &api_s->sticker, res))
+            sticker_parse (field, api_s->sticker, res);
+        json_decref (field);
+    } else
+        api_s->sticker = NULL;
+
+    field = json_object_get (root, "video");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (Video_s), &api_s->video, res))
+            video_parse (field, api_s->video, res);
+        json_decref (field);
+    } else
+        api_s->video = NULL;
+
+    field = json_object_get (root, "voice");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (Voice_s), &api_s->voice, res))
+            voice_parse (field, api_s->voice, res);
+        json_decref (field);
+    } else
+        api_s->voice = NULL;
+
+    field = json_object_get (root, "contact");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (Contact_s), &api_s->contact, res))
+            contact_parse (field, api_s->contact, res);
+        json_decref (field);
+    } else
+        api_s->contact = NULL;
+
+    field = json_object_get (root, "location");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (Location_s), &api_s->location, res))
+            location_parse (field, api_s->location, res);
+        json_decref (field);
+    } else
+        api_s->location = NULL;
+
+    field = json_object_get (root, "venue");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (Venue_s), &api_s->venue, res))
+            venue_parse (field, api_s->venue, res);
+        json_decref (field);
+    } else
+        api_s->venue = NULL;
+
+    field = json_object_get (root, "new_chat_member");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (User_s), &api_s->new_chat_member, res))
+            user_parse (field, api_s->new_chat_member, res);
+        json_decref (field);
+    } else
+        api_s->new_chat_member = NULL;
+
+    field = json_object_get (root, "left_chat_member");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (User_s), &api_s->left_chat_member, res))
+            user_parse (field, api_s->left_chat_member, res);
+        json_decref (field);
+    } else
+        api_s->left_chat_member = NULL;
+    
+    field = json_object_get (root, "pinned_message");
+    if (field)
+    {
+        if (!alloc_obj (sizeof (Message_s), &api_s->pinned_message, res))
+            message_parse (field, api_s->pinned_message, res);
+        json_decref (field);
+    } else
+        api_s->pinned_message = NULL;
+}
+
 void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
 {
     /*
@@ -259,7 +444,6 @@ void messageentityarr_parse (json_t *root, MessageEntity_s ***api_s, size_t *arr
     if (*array_size)
     {
         mem_size = sizeof (MessageEntity_s) * *array_size;
-
         if (!alloc_obj (mem_size, api_s, res))
         {
             for (int i = 0; i < *array_size; i++)
