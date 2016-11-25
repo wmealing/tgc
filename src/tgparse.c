@@ -9,6 +9,18 @@
 
 #define OBJ_FREE(obj, obj_freer) if (obj) { obj_freer (obj); free (obj); }
 
+/*
+ * Object parse helper
+ */
+#define OBJ_PARSE(root_json_obj, json_obj, field, obj, obj_type, obj_parser) \
+    json_obj = json_object_get (root_json_obj, field);\
+    if (json_obj)\
+    {\
+        if (!alloc_obj (sizeof (obj_type), &obj, res))\
+            obj_parser (json_obj, obj, res);\
+    } else\
+        obj = NULL
+
 void parse_str (json_t *root, char **target, char *field, tg_res *res)
 {
     /*
@@ -241,158 +253,23 @@ void message_parse (json_t *root, Message_s *api_s, tg_res *res)
     photosizearr_parse (field, &api_s->new_chat_photo, &api_s->new_chat_photo_len, res);
     json_decref (field);
 
-    field = json_object_get (root, "from");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (User_s), &api_s->from, res))
-            user_parse (field, api_s->from, res);
-        json_decref (field);
-    } else
-        api_s->from = NULL;
-
-    field = json_object_get (root, "chat");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (Chat_s), &api_s->chat, res))
-            chat_parse (field, api_s->chat, res);
-        json_decref (field);
-    } else
-        api_s->chat = NULL;
-
-    field = json_object_get (root, "forward_from");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (User_s), &api_s->forward_from, res))
-            user_parse (field, api_s->forward_from, res);
-        json_decref (field);
-    } else 
-        api_s->forward_from = NULL;
-
-    field = json_object_get (root, "forward_from_chat");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (Chat_s), &api_s->forward_from_chat, res))
-            chat_parse (field, api_s->forward_from_chat, res);
-        json_decref (field);
-    } else
-        api_s->forward_from_chat = NULL;
-
-    field = json_object_get (root, "reply_to_message");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (Message_s), &api_s->reply_to_message, res))
-            message_parse (field, api_s->reply_to_message, res);
-        json_decref (field);
-    } else
-        api_s->reply_to_message = NULL;
-
-    field = json_object_get (root, "audio");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (Audio_s), &api_s->audio, res))
-            audio_parse (field, api_s->audio, res);
-        json_decref (field);
-    } else
-        api_s->audio = NULL;
-
-    field = json_object_get (root, "document");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (Document_s), &api_s->document, res))
-            document_parse (field, api_s->document, res);
-        json_decref (field);
-    } else
-        api_s->document = NULL;
-
-    field = json_object_get (root, "game");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (Game_s), &api_s->game, res))
-            game_parse (field, api_s->game, res);
-        json_decref (field);
-    } else
-        api_s->game = NULL;
-
-    field = json_object_get (root, "sticker");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (Sticker_s), &api_s->sticker, res))
-            sticker_parse (field, api_s->sticker, res);
-        json_decref (field);
-    } else
-        api_s->sticker = NULL;
-
-    field = json_object_get (root, "video");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (Video_s), &api_s->video, res))
-            video_parse (field, api_s->video, res);
-        json_decref (field);
-    } else
-        api_s->video = NULL;
-
-    field = json_object_get (root, "voice");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (Voice_s), &api_s->voice, res))
-            voice_parse (field, api_s->voice, res);
-        json_decref (field);
-    } else
-        api_s->voice = NULL;
-
-    field = json_object_get (root, "contact");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (Contact_s), &api_s->contact, res))
-            contact_parse (field, api_s->contact, res);
-        json_decref (field);
-    } else
-        api_s->contact = NULL;
-
-    field = json_object_get (root, "location");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (Location_s), &api_s->location, res))
-            location_parse (field, api_s->location, res);
-        json_decref (field);
-    } else
-        api_s->location = NULL;
-
-    field = json_object_get (root, "venue");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (Venue_s), &api_s->venue, res))
-            venue_parse (field, api_s->venue, res);
-        json_decref (field);
-    } else
-        api_s->venue = NULL;
-
-    field = json_object_get (root, "new_chat_member");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (User_s), &api_s->new_chat_member, res))
-            user_parse (field, api_s->new_chat_member, res);
-        json_decref (field);
-    } else
-        api_s->new_chat_member = NULL;
-
-    field = json_object_get (root, "left_chat_member");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (User_s), &api_s->left_chat_member, res))
-            user_parse (field, api_s->left_chat_member, res);
-        json_decref (field);
-    } else
-        api_s->left_chat_member = NULL;
-    
-    field = json_object_get (root, "pinned_message");
-    if (field)
-    {
-        if (!alloc_obj (sizeof (Message_s), &api_s->pinned_message, res))
-            message_parse (field, api_s->pinned_message, res);
-        json_decref (field);
-    } else
-        api_s->pinned_message = NULL;
+    OBJ_PARSE (root, field, "from", api_s->from, User_s, user_parse);
+    OBJ_PARSE (root, field, "chat", api_s->chat, Chat_s, chat_parse);
+    OBJ_PARSE (root, field, "forward_from", api_s->forward_from, User_s, user_parse);
+    OBJ_PARSE (root, field, "forward_from_chat", api_s->forward_from_chat, Chat_s, chat_parse);
+    OBJ_PARSE (root, field, "reply_to_message", api_s->reply_to_message, Message_s, message_parse);
+    OBJ_PARSE (root, field, "audio", api_s->audio, Audio_s, audio_parse);
+    OBJ_PARSE (root, field, "document", api_s->document, Document_s, document_parse);
+    OBJ_PARSE (root, field, "game", api_s->game, Game_s, game_parse);
+    OBJ_PARSE (root, field, "sticker", api_s->sticker, Sticker_s, sticker_parse);
+    OBJ_PARSE (root, field, "video", api_s->video, Video_s, video_parse);
+    OBJ_PARSE (root, field, "voice", api_s->voice, Voice_s, voice_parse);
+    OBJ_PARSE (root, field, "contact", api_s->contact, Contact_s, contact_parse);
+    OBJ_PARSE (root, field, "location", api_s->location, Location_s, location_parse);
+    OBJ_PARSE (root, field, "venue", api_s->venue, Venue_s, venue_parse);
+    OBJ_PARSE (root, field, "new_chat_member", api_s->new_chat_member, User_s, user_parse);
+    OBJ_PARSE (root, field, "left_chat_member", api_s->left_chat_member, User_s, user_parse);
+    OBJ_PARSE (root, field, "pinned_message", api_s->pinned_message, Message_s, message_parse);
 }
 
 void Message_free (Message_s *api_s)
@@ -442,20 +319,14 @@ void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
      * https://core.telegram.org/bots/api/#messageentity
      */
 
-    json_t *user = json_object_get (root, "user");
+    json_t *user;
 
     parse_str (root, &api_s->type, "type", res);
     parse_int (root, &api_s->offset, "offset", res);
     parse_int (root, &api_s->length, "length", res);
     parse_str (root, &api_s->url, "url", res);
     
-    if (user)
-    {
-        if (!alloc_obj (sizeof (User_s), &api_s->user, res))
-            user_parse (user, api_s->user, res);
-        json_decref (user);
-    } else
-        api_s->user = NULL;
+    OBJ_PARSE (root, user, "user", api_s->user, User_s, user_parse);
 }
 
 void messageentityarr_parse (json_t *root, MessageEntity_s **api_s, size_t *array_size, tg_res *res)
@@ -582,20 +453,14 @@ void document_parse (json_t *root, Document_s *api_s, tg_res *res)
      * https://core.telegram.org/bots/api/#document
      */
     
-    json_t *thumb = json_object_get (root, "thumb");
+    json_t *thumb;
 
     parse_str (root, &api_s->file_id, "file_id", res);
     parse_str (root, &api_s->file_name, "file_name", res);
     parse_str (root, &api_s->mime_type, "mime_type", res);
     parse_int (root, &api_s->file_size, "file_size", res);
     
-    if (thumb)
-    {
-        if (!alloc_obj (sizeof (PhotoSize_s), &api_s->thumb, res))
-            photosize_parse (thumb, api_s->thumb, res);
-        json_decref (thumb);
-    } else
-        api_s->thumb = NULL;
+    OBJ_PARSE (root, thumb, "thumb", api_s->thumb, PhotoSize_s, photosize_parse);
 }
 
 void Document_free (Document_s *api_s)
@@ -610,7 +475,7 @@ void Document_free (Document_s *api_s)
 
 void sticker_parse (json_t *root, Sticker_s *api_s, tg_res *res)
 {
-    json_t *thumb = json_object_get (root, "thumb");
+    json_t *thumb;
 
     parse_str (root, &api_s->file_id, "file_id", res);
     parse_int (root, &api_s->width, "width", res);
@@ -618,13 +483,7 @@ void sticker_parse (json_t *root, Sticker_s *api_s, tg_res *res)
     parse_str (root, &api_s->emoji, "emoji", res);
     parse_int (root, &api_s->file_size, "file_size", res);
 
-    if (thumb)
-    {
-        if (!alloc_obj (sizeof (PhotoSize_s), &api_s->thumb, res))
-            photosize_parse (thumb, api_s->thumb, res);
-        json_decref (thumb);
-    } else
-        api_s->thumb = NULL;
+    OBJ_PARSE (root, thumb, "thumb", api_s->thumb, PhotoSize_s, photosize_parse);
 }
 
 void Sticker_free (Sticker_s *api_s)
@@ -640,7 +499,7 @@ void Sticker_free (Sticker_s *api_s)
 
 void video_parse (json_t *root, Video_s *api_s, tg_res *res)
 {
-    json_t *thumb = json_object_get (root, "thumb");
+    json_t *thumb;
 
     parse_str (root, &api_s->file_id, "file_id", res);
     parse_int (root, &api_s->width, "width", res);
@@ -649,13 +508,7 @@ void video_parse (json_t *root, Video_s *api_s, tg_res *res)
     parse_str (root, &api_s->mime_type, "mime_type", res);
     parse_int (root, &api_s->file_size, "file_size", res);
 
-    if (thumb)
-    {
-        if (!alloc_obj (sizeof (PhotoSize_s), &api_s->thumb, res))
-            photosize_parse (thumb, api_s->thumb, res);
-        json_decref (thumb);
-    } else
-        api_s->thumb = NULL;
+    OBJ_PARSE (root, thumb, "thumb", api_s->thumb, PhotoSize_s, photosize_parse);
 }
 
 void Video_free (Video_s *api_s)
@@ -716,19 +569,13 @@ void Location_free (Location_s *api_s)
 
 void venue_parse (json_t *root, Venue_s *api_s, tg_res *res)
 {
-    json_t *location = json_object_get (root, "location");
+    json_t *location;
 
     parse_str (root, &api_s->title, "title", res);
     parse_str (root, &api_s->address, "address", res);
     parse_str (root, &api_s->foursquare_id, "foursquare_id", res);
 
-    if (location)
-    {
-        if (!alloc_obj (sizeof (Location_s), &api_s->location, res))
-            location_parse (root, api_s->location, res);
-        json_decref (location);
-    } else
-        api_s->location = NULL;
+    OBJ_PARSE (root, location, "location", api_s->location, Location_s, location_parse);
 }
 
 void Venue_free (Venue_s *api_s)
@@ -790,14 +637,7 @@ void game_parse (json_t *root, Game_s *api_s, tg_res *res)
     messageentityarr_parse (text_entities, &api_s->text_entities, &api_s->text_entities_len, res);
     json_decref (text_entities);
 
-    animation = json_object_get (root, "animation");
-    if (animation)
-    {
-        if (!alloc_obj (sizeof (Animation_s), &api_s->animation, res))
-            animation_parse (animation, api_s->animation, res);
-        json_decref (animation);
-    } else
-        api_s->animation = NULL;
+    OBJ_PARSE (root, animation, "animation", api_s->animation, Animation_s, animation_parse);
 }
 
 void Game_free (Game_s *api_s)
@@ -826,14 +666,7 @@ void animation_parse (json_t *root, Animation_s *api_s, tg_res *res)
     parse_str (root, &api_s->mime_type, "mime_type", res);
     parse_int (root, &api_s->file_size, "file_size", res);
 
-    thumb = json_object_get (root, "thumb");
-    if (thumb)
-    {
-        if (!alloc_obj (sizeof (PhotoSize_s), &api_s->thumb, res))
-            photosize_parse (thumb, api_s->thumb, res);
-        json_decref (thumb);
-    } else
-        api_s->thumb = NULL;
+    OBJ_PARSE (root, thumb, "thumb", api_s->thumb, PhotoSize_s, photosize_parse);
 }
 
 void Animation_free (Animation_s *api_s)
