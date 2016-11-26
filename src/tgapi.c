@@ -189,10 +189,9 @@ _Bool is_okay (json_t *root, tg_res *res)
     }
 }
 
-char *tg_load (char **data, tg_res *res)
+json_t *tg_load (char **data, json_t *resp_obj, tg_res *res)
 {
-    json_t *resp_obj, *result;
-    char *result_txt = NULL;
+    json_t *result;
 
     /* Loads the response. */
     resp_obj = json_loads (*data, 0, &res->json_err);
@@ -201,14 +200,14 @@ char *tg_load (char **data, tg_res *res)
     if (!resp_obj)
     {
         res->ok = TG_JSONFAIL;
-        return result_txt;
+        return NULL;
     }
 
     /* Checks if ok:true */
     if (!is_okay (resp_obj, res))
     {
         json_decref (resp_obj);
-        return result_txt;
+        return NULL;
     }
 
     /* Loads the result */
@@ -217,17 +216,9 @@ char *tg_load (char **data, tg_res *res)
     {
         json_decref (resp_obj);
         res->ok = TG_JSONFAIL;
-        return result_txt;
-    }
-
-    /* Dumps to result and cleans up */
-    result_txt = json_dumps (result, 0);
-    json_decref (resp_obj);
-    if (result_txt)
-        res->ok = TG_OKAY;
-    else
-        res->ok = TG_JSONFAIL;
-    return result_txt;
+    } 
+    
+    return result;
 }
 
 tg_res getMe (User_s *api_s)
@@ -238,8 +229,7 @@ tg_res getMe (User_s *api_s)
 
     char url[100];
     http_response response;
-    char *result_txt;
-    json_t *result;
+    json_t *response_obj = NULL, *result;
     tg_res res;
 
     /* Format URL */
@@ -254,24 +244,15 @@ tg_res getMe (User_s *api_s)
     }
 
     /* Checks and gets the result */
-    result_txt = tg_load (&response.data, &res);
-    if (!result_txt)
-        return res;
-
-    /* Loads the result */
-    result = json_loads (result_txt, 0, &res.json_err);
-    free (result_txt);
+    result = tg_load (&response.data, response_obj, &res);
     if (!result)
-    {
-        res.ok = TG_JSONFAIL;
         return res;
-    }
-
+    
     /* Parse the result */
     user_parse (result, api_s, &res);
 
     /* Clean up and return */
-    json_decref (result);
+    json_decref (response_obj);
     return res;
 }
 
