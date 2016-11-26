@@ -221,7 +221,7 @@ json_t *tg_load (char **data, json_t **resp_obj, tg_res *res)
     return result;
 }
 
-User_s *getMe (tg_res *res)
+User_s getMe (tg_res *res)
 {
     /*
      * Makes a getMe request
@@ -232,7 +232,7 @@ User_s *getMe (tg_res *res)
     char url[100];
     http_response response;
     json_t *response_obj, *result;
-    User_s *api_s;
+    User_s api_s = { NULL };
 
     /* Format URL */
     sprintf (url, TG_URL "%s/getMe", tg_token);
@@ -242,22 +242,16 @@ User_s *getMe (tg_res *res)
     if (res->error_code != CURLE_OK)
     {
         res->ok = TG_CURLFAIL;
-        return NULL;
+        return api_s;
     }
 
     /* Checks and gets the result */
     result = tg_load (&response.data, &response_obj, res);
     if (!result)
-        return NULL;
+        return api_s;
     
     /* Parse the result */
-    api_s = malloc (sizeof (User_s));
-    if (!api_s)
-    {
-        res->ok = TG_ALLOCFAIL;
-        return NULL;
-    }
-    user_parse (result, api_s, res);
+    user_parse (result, &api_s, res);
 
     /* Clean up and return */
     json_decref (response_obj);
