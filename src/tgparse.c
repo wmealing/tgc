@@ -336,6 +336,10 @@ void Message_free (Message_s *api_s)
     OBJ_FREE (api_s->left_chat_member, User_free);
     OBJ_FREE (api_s->new_chat_photo, PhotoSize_free);
     OBJ_FREE (api_s->pinned_message, Message_free);
+
+    OBJ_ARR_FREE (api_s->entities, api_s->entities_len, MessageEntity_free);
+    OBJ_ARR_FREE (api_s->photo, api_s->photo_len, PhotoSize_free);
+    OBJ_ARR_FREE (api_s->new_chat_photo, api_s->new_chat_photo_len, PhotoSize_free);
 }
 
 void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
