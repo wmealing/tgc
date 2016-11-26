@@ -187,6 +187,27 @@ _Bool alloc_obj (size_t obj_size, void *target, tg_res *res)
     }
 }
 
+void update_parse (json_t *root, Update_s *api_s, tg_res *res)
+{
+    json_t *field;
+
+    OBJ_PARSE (root, field, "message", api_s->message, Message_s, message_parse);
+    OBJ_PARSE (root, field, "edited_message", api_s->edited_message, Message_s, message_parse);
+    OBJ_PARSE (root, field, "channel_post", api_s->channel_post, Message_s, message_parse);
+    OBJ_PARSE (root, field, "edited_channel_post", api_s->edited_channel_post, Message_s, message_parse);
+}
+
+void Update_free (Update_s *api_s, size_t arr_length)
+{
+    for (int i = 0; i < arr_length; i++)
+    {
+        free (api_s[i].message);
+        free (api_s[i].edited_message);
+        free (api_s[i].channel_post);
+        free (api_s[i].edited_channel_post);
+    }
+}
+
 void user_parse (json_t *root, User_s *api_s, tg_res *res)
 {
     parse_int (root, &api_s->id, "id", res);

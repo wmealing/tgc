@@ -13,6 +13,8 @@ void parse_double (json_t *root, double **target, char *field, tg_res *res);
 _Bool alloc_obj (size_t obj_size, void *target, tg_res *res);
 
 /* Type parsers */
+void update_parse (json_t *root, Update_s *api_s, tg_res *res);
+
 void user_parse (json_t *root, User_s *api_s, tg_res *res);
 void chat_parse (json_t *root, Chat_s *api_s, tg_res *res);
 void message_parse (json_t *root, Message_s *api_s, tg_res *res);
@@ -28,6 +30,7 @@ void location_parse (json_t *root, Location_s *api_s, tg_res *res);
 void venue_parse (json_t *root, Venue_s *api_s, tg_res *res);
 void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *res);
 void file_parse (json_t *root, File_s *api_s, tg_res *res);
+
 void game_parse (json_t *root, Game_s *api_s, tg_res *res);
 void animation_parse (json_t *root, Animation_s *api_s, tg_res *res);
 
@@ -36,6 +39,8 @@ void photosizearr_parse (json_t *root, PhotoSize_s **api_s, size_t *array_size, 
 void messageentityarr_parse (json_t *root, MessageEntity_s **api_s, size_t *array_size, tg_res *res);
 
 /* Type Free Wrappers */
+void Update_free (Update_s *api_s, size_t arr_length); 
+
 void User_free (User_s *api_s);
 void Chat_free (Chat_s *api_s);
 void Message_free (Message_s *api_s);
@@ -51,6 +56,7 @@ void Location_free (Location_s *api_s);
 void Venue_free (Venue_s *api_s);
 void UserProfilePhotos_free (UserProfilePhotos_s *api_s);
 void File_free (File_s *api_s);
+
 void Game_free (Game_s *api_s);
 void Animation_free (Animation_s *api_s);
 

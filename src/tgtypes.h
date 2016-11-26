@@ -2,6 +2,8 @@
 #include <jansson.h>
 
 /* Declarations  */
+typedef struct Update_s Update_s;
+
 typedef struct User_s User_s;
 typedef struct Message_s Message_s;
 typedef struct Chat_s Chat_s;
@@ -20,6 +22,24 @@ typedef struct File_s File_s;
 
 typedef struct Game_s Game_s;
 typedef struct Animation_s Animation_s;
+
+/*
+ * Update
+ * This object represents an incoming update.
+ * At most one of the optional parameters can be present in any given update.
+ * https://core.telegram.org/bots/api/#update
+ *
+ * TODO: InlineQuery and CallbackQuery support.
+ */
+
+struct Update_s
+{
+    json_int_t *update_id;
+    Message_s *message;
+    Message_s *edited_message;
+    Message_s *channel_post;
+    Message_s *edited_channel_post;
+};
 
 /*
  * User
