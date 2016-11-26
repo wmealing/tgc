@@ -189,32 +189,32 @@ _Bool is_okay (json_t *root, tg_res *res)
     }
 }
 
-json_t *tg_load (char **data, json_t *resp_obj, tg_res *res)
+json_t *tg_load (char **data, json_t **resp_obj, tg_res *res)
 {
     json_t *result;
 
     /* Loads the response. */
-    resp_obj = json_loads (*data, 0, &res->json_err);
+    *resp_obj = json_loads (*data, 0, &res->json_err);
     free (*data);
 
-    if (!resp_obj)
+    if (!*resp_obj)
     {
         res->ok = TG_JSONFAIL;
         return NULL;
     }
 
     /* Checks if ok:true */
-    if (!is_okay (resp_obj, res))
+    if (!is_okay (*resp_obj, res))
     {
-        json_decref (resp_obj);
+        json_decref (*resp_obj);
         return NULL;
     }
 
     /* Loads the result */
-    result = json_object_get (resp_obj, "result");
+    result = json_object_get (*resp_obj, "result");
     if (!result)
     {
-        json_decref (resp_obj);
+        json_decref (*resp_obj);
         res->ok = TG_JSONFAIL;
     } 
     
@@ -231,7 +231,7 @@ User_s *getMe (tg_res *res)
 
     char url[100];
     http_response response;
-    json_t *response_obj = NULL, *result;
+    json_t *response_obj, *result;
     User_s *api_s;
 
     /* Format URL */
@@ -246,7 +246,7 @@ User_s *getMe (tg_res *res)
     }
 
     /* Checks and gets the result */
-    result = tg_load (&response.data, response_obj, res);
+    result = tg_load (&response.data, &response_obj, res);
     if (!result)
         return NULL;
     
