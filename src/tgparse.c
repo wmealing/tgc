@@ -39,7 +39,6 @@ void parse_str (json_t *root, char **target, char *field, tg_res *res)
 
     if (!field_obj)
     {
-        res->ok = TG_JSONFAIL;
         *target = NULL;
         return;
     }
@@ -54,12 +53,10 @@ void parse_str (json_t *root, char **target, char *field, tg_res *res)
         if (*target)
         {
             strncpy (*target, tmp_str, str_size);
-            json_decref (field_obj);
             return;
         }
         else
         {
-            json_decref (field_obj);
             res->ok = TG_ALLOCFAIL;
             return;
         }
@@ -67,7 +64,6 @@ void parse_str (json_t *root, char **target, char *field, tg_res *res)
     else
     {
         *target = NULL;
-        json_decref (field_obj);
         return;
     }
 }
@@ -82,7 +78,6 @@ void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res)
 
     if (!field_obj)
     {
-        res->ok = TG_JSONFAIL;
         *target = NULL;
         return;
     }
@@ -98,12 +93,10 @@ void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res)
     if (*target)
     {
         **target = json_integer_value (field_obj);
-        json_decref (field_obj);
         return;
     }
     else
     {
-        json_decref (field_obj);
         res->ok = TG_ALLOCFAIL;
         return;
     }
@@ -119,7 +112,6 @@ void parse_double (json_t *root, double **target, char *field, tg_res *res)
 
     if (!field_obj)
     {
-        res->ok = TG_JSONFAIL;
         *target = NULL;
         return;
     }
@@ -129,13 +121,11 @@ void parse_double (json_t *root, double **target, char *field, tg_res *res)
     if (*target)
     {
         **target = json_real_value (field_obj);
-        json_decref (field_obj);
         
         return;
     }
     else
     {
-        json_decref (field_obj);
         res->ok = TG_ALLOCFAIL;
         return;
     }
@@ -151,7 +141,7 @@ void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res)
 
     if (!field_obj)
     {
-        res->ok = TG_JSONFAIL;
+        *target = NULL;
         return;
     }
 
@@ -160,13 +150,11 @@ void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res)
     if (*target)
     {
         **target = json_boolean_value (field_obj);
-        json_decref (field_obj);
 
         return;
     }
     else
     {
-        json_decref (field_obj);
         res->ok = TG_ALLOCFAIL;
         return;
     }
@@ -276,15 +264,12 @@ void message_parse (json_t *root, Message_s *api_s, tg_res *res)
 
     field = json_object_get (root, "entities");
     messageentityarr_parse (field, &api_s->entities, &api_s->entities_len, res);
-    json_decref (field);
 
     field = json_object_get (root, "photo");
     photosizearr_parse (field, &api_s->photo, &api_s->photo_len, res);
-    json_decref (field);
 
     field = json_object_get (root, "new_chat_photo");
     photosizearr_parse (field, &api_s->new_chat_photo, &api_s->new_chat_photo_len, res);
-    json_decref (field);
 
     OBJ_PARSE (root, field, "from", api_s->from, User_s, user_parse);
     OBJ_PARSE (root, field, "chat", api_s->chat, Chat_s, chat_parse);
@@ -391,7 +376,6 @@ void messageentityarr_parse (json_t *root, MessageEntity_s **api_s, size_t *arra
             {
                 current_entity = json_array_get (root, i);
                 messageentity_parse (current_entity, &((*api_s)[i]), res);
-                json_decref (current_entity);
             }
         }
     } else
@@ -447,7 +431,6 @@ void photosizearr_parse (json_t *root, PhotoSize_s **api_s, size_t *array_size, 
             {
                 current_photo = json_array_get (root, i);
                 photosize_parse (current_photo, &((*api_s)[i]), res);
-                json_decref (current_photo);
             }
         }
     } else
@@ -654,7 +637,6 @@ void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *
 
     photos = json_object_get (root, "photos");
     photosizearr_parse (photos, &api_s->photos, &api_s->photos_len, res);
-    json_decref (photos);
 }
 
 void UserProfilePhotos_free (UserProfilePhotos_s *api_s)
@@ -692,11 +674,9 @@ void game_parse (json_t *root, Game_s *api_s, tg_res *res)
 
     photo = json_object_get (root, "photo");
     photosizearr_parse (photo, &api_s->photo, &api_s->photo_len, res);
-    json_decref (photo);
 
     text_entities = json_object_get (root, "text_entities");
     messageentityarr_parse (text_entities, &api_s->text_entities, &api_s->text_entities_len, res);
-    json_decref (text_entities);
 
     OBJ_PARSE (root, animation, "animation", api_s->animation, Animation_s, animation_parse);
 }
