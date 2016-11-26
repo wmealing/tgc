@@ -7,12 +7,14 @@
  * Object free helper
  */
 
-#define OBJ_FREE(obj, obj_freer) if (obj) { obj_freer (obj); free (obj); }
+#define OBJ_FREE(obj, obj_freer) if (obj) obj_freer (obj)
 
 #define OBJ_ARR_FREE(obj, obj_len, obj_freer)\
-    for (int i = 0; i < obj_len; i++)\
-        obj_freer (&obj[i]);\
-    free (obj)
+    if (obj_len)\
+    {\
+        for (int i = obj_len; i > 0; i--)\
+            obj_freer (&obj[i]);\
+    }
 
 /*
  * Object parse helper
@@ -220,7 +222,6 @@ void user_parse (json_t *root, User_s *api_s, tg_res *res)
 
 void User_free (User_s *api_s)
 {
-    free (api_s->ok);
     free (api_s->id);
     free (api_s->first_name);
     free (api_s->last_name);
