@@ -221,38 +221,46 @@ json_t *tg_load (char **data, json_t *resp_obj, tg_res *res)
     return result;
 }
 
-tg_res getMe (User_s *api_s)
+User_s *getMe (tg_res *res)
 {
     /*
      * Makes a getMe request
+     * Returns basic information about the bot in form of a User object.
+     * https://core.telegram.org/bots/api/#getme
      */
 
     char url[100];
     http_response response;
     json_t *response_obj = NULL, *result;
-    tg_res res;
+    User_s *api_s;
 
     /* Format URL */
     sprintf (url, TG_URL "%s/getMe", tg_token);
 
     /* Make the get request */
-    res.error_code = tg_get (&response, url);
-    if (res.error_code != CURLE_OK)
+    res->error_code = tg_get (&response, url);
+    if (res->error_code != CURLE_OK)
     {
-        res.ok = TG_CURLFAIL;
-        return res;
+        res->ok = TG_CURLFAIL;
+        return NULL;
     }
 
     /* Checks and gets the result */
-    result = tg_load (&response.data, response_obj, &res);
+    result = tg_load (&response.data, response_obj, res);
     if (!result)
-        return res;
+        return NULL;
     
     /* Parse the result */
-    user_parse (result, api_s, &res);
+    api_s = malloc (sizeof (User_s));
+    if (!api_s)
+    {
+        res->ok = TG_ALLOCFAIL;
+        return NULL;
+    }
+    user_parse (result, api_s, res);
 
     /* Clean up and return */
     json_decref (response_obj);
-    return res;
+    return api_s;
 }
 

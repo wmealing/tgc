@@ -206,6 +206,8 @@ void Update_free (Update_s *api_s, size_t arr_length)
         free (api_s[i].channel_post);
         free (api_s[i].edited_channel_post);
     }
+    
+    free (api_s);
 }
 
 void user_parse (json_t *root, User_s *api_s, tg_res *res)
@@ -223,6 +225,8 @@ void User_free (User_s *api_s)
     free (api_s->first_name);
     free (api_s->last_name);
     free (api_s->username);
+    
+    free (api_s);
 }
 
 void chat_parse (json_t *root, Chat_s *api_s, tg_res *res)
@@ -246,6 +250,8 @@ void Chat_free (Chat_s *api_s)
     free (api_s->first_name);
     free (api_s->last_name);
     free (api_s->all_members_are_administrators);
+    
+    free (api_s);
 }
 
 void message_parse (json_t *root, Message_s *api_s, tg_res *res)
@@ -340,6 +346,8 @@ void Message_free (Message_s *api_s)
     OBJ_ARR_FREE (api_s->entities, api_s->entities_len, MessageEntity_free);
     OBJ_ARR_FREE (api_s->photo, api_s->photo_len, PhotoSize_free);
     OBJ_ARR_FREE (api_s->new_chat_photo, api_s->new_chat_photo_len, PhotoSize_free);
+    
+    free (api_s);
 }
 
 void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
@@ -397,6 +405,8 @@ void MessageEntity_free (MessageEntity_s *api_s)
     free (api_s->url);
     
     OBJ_FREE (api_s->user, User_free);
+
+    free (api_s);
 }
 
 void photosize_parse (json_t *root, PhotoSize_s *api_s, tg_res *res)
@@ -449,6 +459,8 @@ void PhotoSize_free (PhotoSize_s *api_s)
     free (api_s->width);
     free (api_s->height);
     free (api_s->file_size);
+
+    free (api_s);
 }
 
 void audio_parse (json_t *root, Audio_s *api_s, tg_res *res)
@@ -474,6 +486,8 @@ void Audio_free (Audio_s *api_s)
     free (api_s->title);
     free (api_s->mime_type);
     free (api_s->file_size);
+
+    free (api_s);
 }
 
 void document_parse (json_t *root, Document_s *api_s, tg_res *res)
@@ -501,6 +515,8 @@ void Document_free (Document_s *api_s)
     free (api_s->file_size);
 
     OBJ_FREE (api_s->thumb, PhotoSize_free);
+
+    free (api_s);
 }
 
 void sticker_parse (json_t *root, Sticker_s *api_s, tg_res *res)
@@ -525,6 +541,8 @@ void Sticker_free (Sticker_s *api_s)
     free (api_s->file_size);
     
     OBJ_FREE (api_s->thumb, PhotoSize_free);
+
+    free (api_s);
 }
 
 void video_parse (json_t *root, Video_s *api_s, tg_res *res)
@@ -551,6 +569,8 @@ void Video_free (Video_s *api_s)
     free (api_s->file_size);
     
     OBJ_FREE (api_s->thumb, PhotoSize_free);
+
+    free (api_s);
 }
 
 void voice_parse (json_t *root, Voice_s *api_s, tg_res *res)
@@ -567,6 +587,8 @@ void Voice_free (Voice_s *api_s)
     free (api_s->duration);
     free (api_s->mime_type);
     free (api_s->file_size);
+
+    free (api_s);
 }
 
 void contact_parse (json_t *root, Contact_s *api_s, tg_res *res)
@@ -583,6 +605,8 @@ void Contact_free (Contact_s *api_s)
     free (api_s->first_name);
     free (api_s->last_name);
     free (api_s->user_id);
+
+    free (api_s);
 }
 
 void location_parse (json_t *root, Location_s *api_s, tg_res *res)
@@ -595,6 +619,8 @@ void Location_free (Location_s *api_s)
 {
     free (api_s->longitude);
     free (api_s->latitude);
+
+    free (api_s);
 }
 
 void venue_parse (json_t *root, Venue_s *api_s, tg_res *res)
@@ -615,6 +641,8 @@ void Venue_free (Venue_s *api_s)
     free (api_s->foursquare_id);
 
     OBJ_FREE (api_s->location, Location_free);
+
+    free (api_s);
 }
 
 void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *res)
@@ -633,6 +661,8 @@ void UserProfilePhotos_free (UserProfilePhotos_s *api_s)
     free (api_s->total_count);
     
     OBJ_ARR_FREE (api_s->photos, api_s->photos_len, PhotoSize_free);
+
+    free (api_s);
 }
 
 void file_parse (json_t *root, File_s *api_s, tg_res *res)
@@ -647,6 +677,8 @@ void File_free (File_s *api_s)
     free (api_s->file_id);
     free (api_s->file_size);
     free (api_s->file_path);
+
+    free (api_s);
 }
 
 void game_parse (json_t *root, Game_s *api_s, tg_res *res)
@@ -678,6 +710,8 @@ void Game_free (Game_s *api_s)
     OBJ_ARR_FREE (api_s->text_entities, api_s->text_entities_len, MessageEntity_free);
 
     OBJ_FREE (api_s->animation, Animation_free);
+
+    free (api_s);
 }
 
 void animation_parse (json_t *root, Animation_s *api_s, tg_res *res)
@@ -700,5 +734,7 @@ void Animation_free (Animation_s *api_s)
     free (api_s->file_size);
 
     OBJ_FREE (api_s->thumb, PhotoSize_free);
+
+    free (api_s);
 }
 

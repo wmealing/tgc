@@ -47,5 +47,5 @@ void tg_cleanup (void);
  * Pass User_s
  */
 
-tg_res getMe (User_s *api_s);
+User_s *getMe (tg_res *res);
 
