@@ -74,7 +74,7 @@ _Bool tg_post (http_response *response, char *method, json_t *post_json, tg_res 
      */
 
     extern CURLSH *tg_handle;
-    extern char *tg_token;
+    extern char tg_token[50];
     CURLcode curl_res;
     CURL *curl_handle = curl_easy_init ();
     char url[200] = { 0 };
@@ -135,7 +135,7 @@ _Bool tg_get (http_response *response, char *method, tg_res *res)
      */
 
     extern CURLSH *tg_handle;
-    extern char *tg_token;
+    extern char tg_token[50];
     CURLcode curl_res;
     CURL *curl_handle = curl_easy_init();
     char url[200] = {0};
@@ -202,10 +202,10 @@ _Bool is_okay (json_t *root, tg_res *res)
         res->ok = TG_NOTOKAY;
 
         error_code = json_object_get (root, "error_code");
-        res->error_code = json_integer_value (err_code_obj);
+        res->error_code = json_integer_value (error_code);
 
         description = json_object_get (root, "description");
-        err_description = json_string_value (desc_obj);
+        err_description = json_string_value (description);
         if (err_description)
             strncpy (res->description, err_description, 99);
 
