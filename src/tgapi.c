@@ -51,19 +51,28 @@ size_t write_response (void *response, size_t size, size_t nmemb, void *write_st
      * CURLOPT_WRITEFUNCTION
      */
 
-    size_t actual_size = size * nmemb;
-    http_response *mem_pointer = (http_response *) write_struct;
+    size_t real_size = size * nmemb;
+    char *old_data = NULL;
+    http_response *mem = (http_response *) write_struct;
 
-    mem_pointer->size = actual_size;
-    mem_pointer->data = malloc (mem_pointer->size);
+    if (mem->data)
+    {
+        old_data = mem->data;
+        mem->data = realloc (old_data, mem->size + real_size + 1);
+    } else
+        mem->data = malloc (real_size + 1);
 
-    if (mem_pointer->data == NULL)
+    if (!mem->data)
+    {
+        free (old_data);
         return 0;
+    }
 
-    memcpy (mem_pointer->data, response, actual_size);
-    mem_pointer->data[mem_pointer->size] = '\0';
+    memcpy (&(mem->data[mem->size]), response, real_size);
+    mem->size += real_size;
+    mem->data[mem->size] = '\0';
 
-    return actual_size;
+    return real_size;
 }
 
 _Bool tg_post (http_response *response, char *method, json_t *post_json, tg_res *res)
@@ -99,6 +108,7 @@ _Bool tg_post (http_response *response, char *method, json_t *post_json, tg_res 
     }
     
     response->data = NULL;
+    response->size = 0;
 
     curl_res = curl_easy_setopt (curl_handle, CURLOPT_SHARE, tg_handle);
     if (curl_res != CURLE_OK) goto curl_error;
@@ -159,6 +169,7 @@ _Bool tg_get (http_response *response, char *method, tg_res *res)
     strncat (url, method, 199);
 
     response->data = NULL;
+    response->size = 0;
 
     curl_res = curl_easy_setopt (curl_handle, CURLOPT_SHARE, tg_handle);
     if (curl_res != CURLE_OK) goto curl_error;

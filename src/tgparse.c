@@ -12,8 +12,10 @@
 #define OBJ_ARR_FREE(obj, obj_len, obj_freer)\
     if (obj_len)\
     {\
-        for (int i = obj_len; i > 0; i--)\
+        for (int i = 0; i < obj_len; i++)\
+        {\
             obj_freer (obj[i]);\
+        }\
         free (obj);\
     }\
 
@@ -220,10 +222,11 @@ void Update_free (Update_s *api_s, size_t arr_length)
 {
     for (int i = 0; i < arr_length; i++)
     {
-        free (api_s[i].message);
-        free (api_s[i].edited_message);
-        free (api_s[i].channel_post);
-        free (api_s[i].edited_channel_post);
+        free (api_s[i].update_id);
+        OBJ_FREE (api_s[i].message, Message_free);
+        OBJ_FREE (api_s[i].edited_message, Message_free);
+        OBJ_FREE (api_s[i].channel_post, Message_free);
+        OBJ_FREE (api_s[i].edited_channel_post, Message_free);
     }
 
     free (api_s);
@@ -319,7 +322,6 @@ void Message_free (Message_s api_s)
 {
     free (api_s.message_id);
     free (api_s.date);
-    free (api_s.chat);
     free (api_s.forward_from_message_id);
     free (api_s.forward_date);
     free (api_s.edit_date);
