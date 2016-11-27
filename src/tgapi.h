@@ -57,3 +57,14 @@ User_s getMe (tg_res *res);
  */
 
 Update_s *getUpdates (long long offset, size_t *limit, int timeout, tg_res *res);
+
+/*
+ * sendMessage
+ * Use this method to send text messages. 
+ * On success, the sent Message is returned.
+ * https://core.telegram.org/bots/api#sendmessage
+*/
+
+Message_s sendMessage (char *chat_id, char *text, char *parse_mode, _Bool disable_web_page_preview,
+        _Bool disable_notification, long long reply_to_message_id, tg_res *res);
+

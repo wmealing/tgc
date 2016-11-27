@@ -340,3 +340,57 @@ Update_s *getUpdates (long long offset, size_t *limit, int timeout, tg_res *res)
     json_decref (response_obj);
     return api_s;
 }
+
+Message_s sendMessage (char *chat_id, char *text, char *parse_mode, _Bool disable_web_page_preview,
+        _Bool disable_notification, long long reply_to_message_id, tg_res *res)
+{
+    /*
+     * sendMessage
+     * Use this method to send text messages. 
+     * On success, the sent Message is returned.
+     * https://core.telegram.org/bots/api#sendmessage
+     */
+
+    http_response response;
+    json_t *post, *response_obj, *result;
+    Message_s api_s = {0};
+    *res = (tg_res){ 0 };
+
+    /* Prep post data */
+    post = json_object();
+
+    if (!post)
+    {
+        res->ok = TG_JSONFAIL;
+        return api_s;
+    }
+    json_object_set_new (post, "chat_id", json_string (chat_id));
+    json_object_set_new (post, "text", json_string (text));
+    json_object_set_new (post, "parse_mode", json_string (parse_mode));
+
+    json_object_set_new (post, "disable_web_page_preview", json_boolean (disable_web_page_preview));
+    json_object_set_new (post, "disable_notification", json_boolean (disable_notification));
+
+    json_object_set_new (post, "reply_to_message_id", json_integer (reply_to_message_id));
+
+    /* Make request */
+    if (tg_post (&response, "/sendMessage", post, res))
+    {
+        json_decref (post);
+        return api_s;
+    }
+    json_decref (post);
+
+    /* Checks and gets the result */
+    result = tg_load (&response.data, &response_obj, res);
+    if (!result)
+        return api_s;
+
+    /* Parse result */
+    message_parse (result, &api_s, res);
+
+    /* Clean up and return */
+    json_decref (response_obj);
+    return api_s;
+}
+

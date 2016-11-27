@@ -13,9 +13,7 @@
     if (obj_len)\
     {\
         for (int i = 0; i < obj_len; i++)\
-        {\
             obj_freer (obj[i]);\
-        }\
         free (obj);\
     }\
 
