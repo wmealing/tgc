@@ -13,8 +13,10 @@ typedef struct
     size_t size;
 } http_response;
 
-CURLSH *tg_handle; /* curl share handle */
-char *tg_token; /* api token */
+/* curl share handle */
+CURLSH *tg_handle;
+/* api token */
+char tg_token[50] = { 0 };
 
 _Bool tg_init (char *api_token)
 {
@@ -23,16 +25,16 @@ _Bool tg_init (char *api_token)
     */
     CURLSHcode res;
 
-    tg_token = api_token;
+    strncpy (tg_token, api_token, 49);
 
-    tg_handle = curl_share_init ();
-    if (!tg_handle) return 0;
+    tg_handle = curl_share_init();
+    if (!tg_handle) return 1;
     res = curl_share_setopt (tg_handle, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
-    if (res != CURLSHE_OK) return 0;
+    if (res != CURLSHE_OK) return 1;
     res = curl_share_setopt (tg_handle, CURLSHOPT_SHARE, CURL_LOCK_DATA_SSL_SESSION);
-    if (res != CURLSHE_OK) return 0;
+    if (res != CURLSHE_OK) return 1;
 
-    return 1;
+    return 0;
 }
 
 void tg_cleanup (void)
@@ -55,10 +57,8 @@ size_t write_response (void *response, size_t size, size_t nmemb, void *write_st
     mem_pointer->size = actual_size;
     mem_pointer->data = malloc (mem_pointer->size);
 
-    if (mem_pointer->data == NULL) {
-        fprintf (stderr, "write_response - malloc() failed to allocate memory.\n");
+    if (mem_pointer->data == NULL)
         return 0;
-    }
 
     memcpy (mem_pointer->data, response, actual_size);
     mem_pointer->data[mem_pointer->size] = '\0';
@@ -66,7 +66,7 @@ size_t write_response (void *response, size_t size, size_t nmemb, void *write_st
     return actual_size;
 }
 
-_Bool tg_post (http_response *response, char *url, char *post)
+_Bool tg_post (http_response *response, char *method, json_t *post_json, tg_res *res)
 {
     /*
      * HTTP post request wrapper
@@ -74,11 +74,29 @@ _Bool tg_post (http_response *response, char *url, char *post)
      */
 
     extern CURLSH *tg_handle;
+    extern char *tg_token;
     CURLcode curl_res;
     CURL *curl_handle = curl_easy_init ();
+    char url[200] = { 0 };
+    char *post_data;
 
     if (!curl_handle)
-        return CURLE_FAILED_INIT;
+    {
+        res->ok = TG_CURLFAIL;
+        res->error_code = CURLE_FAILED_INIT;
+        return 1;
+    }
+    
+    strncat (url, "https://api.telegram.org/bot", 199);
+    strncat (url, tg_token, 199);
+    strncat (url, method, 199);
+
+    post_data = json_dumps (post_json, 0);
+    if (!post_data)
+    {
+        res->ok = TG_JSONFAIL;
+        return 1;
+    }
 
     response->data = NULL;
 
@@ -91,36 +109,47 @@ _Bool tg_post (http_response *response, char *url, char *post)
 
     curl_res = curl_easy_setopt (curl_handle, CURLOPT_URL, url);
     if (curl_res != CURLE_OK) goto curl_error;
-    curl_res = curl_easy_setopt (curl_handle, CURLOPT_POST, 1);
-    if (curl_res != CURLE_OK) goto curl_error;
-    curl_res = curl_easy_setopt (curl_handle, CURLOPT_POSTFIELDS, post);
+    curl_res = curl_easy_setopt (curl_handle, CURLOPT_POSTFIELDS, post_data);
     if (curl_res != CURLE_OK) goto curl_error;
     curl_res = curl_easy_perform (curl_handle);
     if (curl_res != CURLE_OK) goto curl_error;
 
     curl_easy_cleanup (curl_handle);
-    return CURLE_OK;
+    free (post_data);
+    return 0;
 
 curl_error:
     if (response->data)
         free (response->data);
+    free (post_data);
 	curl_easy_cleanup (curl_handle);
-        fprintf (stderr, "CURL: %s\n", curl_easy_strerror (curl_res));
-        return 0;
+    res->ok = TG_CURLFAIL;
+    res->error_code = curl_res;
+    return 1;
 }
 
-CURLcode tg_get (http_response *response, char *url)
+_Bool tg_get (http_response *response, char *method, tg_res *res)
 {
     /*
      * HTTP get request wrapper
      */
 
     extern CURLSH *tg_handle;
+    extern char *tg_token;
     CURLcode curl_res;
-    CURL *curl_handle = curl_easy_init ();
+    CURL *curl_handle = curl_easy_init();
+    char url[200] = {0};
 
     if (!curl_handle)
-            return CURLE_FAILED_INIT;
+    {
+        res->ok = TG_CURLFAIL;
+        res->error_code = CURLE_FAILED_INIT;
+        return 1;
+    }
+    
+    strncat (url, "https://api.telegram.org/bot", 199);
+    strncat (url, tg_token, 199);
+    strncat (url, method, 199);
 
     response->data = NULL;
 
@@ -133,20 +162,19 @@ CURLcode tg_get (http_response *response, char *url)
 
     curl_res = curl_easy_setopt (curl_handle, CURLOPT_URL, url);
     if (curl_res != CURLE_OK) goto curl_error;
-    curl_res = curl_easy_setopt (curl_handle, CURLOPT_HTTPGET, 1);
-    if (curl_res != CURLE_OK) goto curl_error;
     curl_res = curl_easy_perform (curl_handle);
     if (curl_res != CURLE_OK) goto curl_error;
 
     curl_easy_cleanup (curl_handle);
-    return CURLE_OK;
+    return 0;
 
-    curl_error:
-        if (response->data)
-            free (response->data);
-        curl_easy_cleanup (curl_handle);
-        fprintf (stderr, "CURL: %s\n", curl_easy_strerror (curl_res));
-        return curl_res;
+curl_error:
+    if (response->data)
+        free (response->data);
+    curl_easy_cleanup (curl_handle);
+    res->ok = TG_CURLFAIL;
+    res->error_code = curl_res;
+    return 1;
 }
 
 _Bool is_okay (json_t *root, tg_res *res)
@@ -155,37 +183,33 @@ _Bool is_okay (json_t *root, tg_res *res)
      * Checks if ok:false in the telegram response and
      * fills in relevant fields.
      */
+    
+    json_t *ok, *error_code, *description;
+    const char *err_description;
 
-    json_t *ok = json_object_get (root, "ok");
+    ok = json_object_get (root, "ok");
 
     if (!ok)
-        return 0;
-
-    if (json_boolean_value (ok))
     {
-        res->ok = TG_OKAY;
-        res->error_code = 0;
-        *res->description = '\0';
- 
+        res->ok = TG_JSONFAIL;
         return 1;
     }
+
+    if (json_boolean_value (ok))
+        return 0;
     else
     {
-        const char *err_description;
-
         res->ok = TG_NOTOKAY;
 
-        json_t *err_code_obj = json_object_get (root, "error_code");
+        error_code = json_object_get (root, "error_code");
         res->error_code = json_integer_value (err_code_obj);
 
-        json_t *desc_obj = json_object_get (root, "description");
+        description = json_object_get (root, "description");
         err_description = json_string_value (desc_obj);
         if (err_description)
-            strcpy (res->description, err_description);
-        else
-            *res->description = '\0';
+            strncpy (res->description, err_description, 99);
 
-        return 0;
+        return 1;
     }
 }
 
@@ -204,7 +228,7 @@ json_t *tg_load (char **data, json_t **resp_obj, tg_res *res)
     }
 
     /* Checks if ok:true */
-    if (!is_okay (*resp_obj, res))
+    if (is_okay (*resp_obj, res))
     {
         json_decref (*resp_obj);
         return NULL;
@@ -229,21 +253,14 @@ User_s getMe (tg_res *res)
      * https://core.telegram.org/bots/api/#getme
      */
 
-    char url[100];
     http_response response;
     json_t *response_obj, *result;
     User_s api_s = { NULL };
-
-    /* Format URL */
-    sprintf (url, TG_URL "%s/getMe", tg_token);
-
-    /* Make the get request */
-    res->error_code = tg_get (&response, url);
-    if (res->error_code != CURLE_OK)
-    {
-        res->ok = TG_CURLFAIL;
+    *res = (tg_res){ 0 };
+    
+    /* Make request */
+    if (tg_get (&response, "/getMe", res))
         return api_s;
-    }
 
     /* Checks and gets the result */
     result = tg_load (&response.data, &response_obj, res);
