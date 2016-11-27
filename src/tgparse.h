@@ -41,22 +41,22 @@ void messageentityarr_parse (json_t *root, MessageEntity_s **api_s, size_t *arra
 /* Type Free Wrappers */
 void Update_free (Update_s *api_s, size_t arr_length); 
 
-void User_free (User_s *api_s);
-void Chat_free (Chat_s *api_s);
-void Message_free (Message_s *api_s);
-void MessageEntity_free (MessageEntity_s *api_s);
-void PhotoSize_free (PhotoSize_s *api_s);
-void Audio_free (Audio_s *api_s);
-void Document_free (Document_s *api_s);
-void Sticker_free (Sticker_s *api_s);
-void Video_free (Video_s *api_s);
-void Voice_free (Voice_s *api_s);
-void Contact_free (Contact_s *api_s);
-void Location_free (Location_s *api_s);
-void Venue_free (Venue_s *api_s);
-void UserProfilePhotos_free (UserProfilePhotos_s *api_s);
-void File_free (File_s *api_s);
+void User_free (User_s api_s);
+void Chat_free (Chat_s api_s);
+void Message_free (Message_s api_s);
+void MessageEntity_free (MessageEntity_s api_s);
+void PhotoSize_free (PhotoSize_s api_s);
+void Audio_free (Audio_s api_s);
+void Document_free (Document_s api_s);
+void Sticker_free (Sticker_s api_s);
+void Video_free (Video_s api_s);
+void Voice_free (Voice_s api_s);
+void Contact_free (Contact_s api_s);
+void Location_free (Location_s api_s);
+void Venue_free (Venue_s api_s);
+void UserProfilePhotos_free (UserProfilePhotos_s api_s);
+void File_free (File_s api_s);
 
-void Game_free (Game_s *api_s);
-void Animation_free (Animation_s *api_s);
+void Game_free (Game_s api_s);
+void Animation_free (Animation_s api_s);
 
