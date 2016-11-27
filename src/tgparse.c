@@ -178,14 +178,42 @@ _Bool alloc_obj (size_t obj_size, void *target, tg_res *res)
     }
 }
 
-void update_parse (json_t *root, Update_s *api_s, tg_res *res)
+size_t update_parse (json_t *root, Update_s **api_s, tg_res *res)
 {
-    json_t *field;
+    json_t *update, *field;
+    size_t limit;
+    
+    limit = json_array_size (root);
+    if (!limit)
+    {
+        *api_s = NULL;
+        return 0;
+    }
 
-    OBJ_PARSE (root, field, "message", api_s->message, Message_s, message_parse);
-    OBJ_PARSE (root, field, "edited_message", api_s->edited_message, Message_s, message_parse);
-    OBJ_PARSE (root, field, "channel_post", api_s->channel_post, Message_s, message_parse);
-    OBJ_PARSE (root, field, "edited_channel_post", api_s->edited_channel_post, Message_s, message_parse);
+    *api_s = malloc (sizeof (Update_s) * limit);
+    if (!*api_s)
+    {
+        res->ok = TG_ALLOCFAIL;
+        return 0;
+    }
+
+    for (int i = 0; i < limit; i++)
+    {
+        update = json_array_get (root, i);
+        
+        if (!update)
+        {
+            res->ok = TG_JSONFAIL;
+            break;
+        }
+        parse_int (update, &(*api_s)[i].update_id, "update_id", res);
+        OBJ_PARSE (update, field, "message", (*api_s)[i].message, Message_s, message_parse);
+        OBJ_PARSE (update, field, "edited_message", (*api_s)[i].edited_message, Message_s, message_parse);
+        OBJ_PARSE (update, field, "channel_post", (*api_s)[i].channel_post, Message_s, message_parse);
+        OBJ_PARSE (update, field, "edited_channel_post", (*api_s)[i].edited_channel_post, Message_s, message_parse);
+    }
+    
+    return limit;
 }
 
 void Update_free (Update_s *api_s, size_t arr_length)

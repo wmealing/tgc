@@ -49,3 +49,11 @@ void tg_cleanup (void);
 
 User_s getMe (tg_res *res);
 
+/*
+ * Makes a getUpdates request.
+ * Use this method to receive incoming updates using long polling.
+ * An Array of Update objects is returned.
+ * https://core.telegram.org/bots/api#getupdates
+ */
+
+Update_s *getUpdates (long long offset, size_t *limit, int timeout, tg_res *res);

@@ -70,12 +70,12 @@ _Bool tg_post (http_response *response, char *method, json_t *post_json, tg_res 
 {
     /*
      * HTTP post request wrapper
-     * Telegram is fine with no application/json headers
      */
 
     extern CURLSH *tg_handle;
     extern char tg_token[50];
     CURLcode curl_res;
+    struct curl_slist *headers = NULL;
     CURL *curl_handle = curl_easy_init ();
     char url[200] = { 0 };
     char *post_data;
@@ -90,14 +90,14 @@ _Bool tg_post (http_response *response, char *method, json_t *post_json, tg_res 
     strncat (url, "https://api.telegram.org/bot", 199);
     strncat (url, tg_token, 199);
     strncat (url, method, 199);
-
+    
     post_data = json_dumps (post_json, 0);
     if (!post_data)
     {
         res->ok = TG_JSONFAIL;
         return 1;
     }
-
+    
     response->data = NULL;
 
     curl_res = curl_easy_setopt (curl_handle, CURLOPT_SHARE, tg_handle);
@@ -105,6 +105,11 @@ _Bool tg_post (http_response *response, char *method, json_t *post_json, tg_res 
     curl_res = curl_easy_setopt (curl_handle, CURLOPT_WRITEFUNCTION, write_response);
     if (curl_res != CURLE_OK) goto curl_error;
     curl_res = curl_easy_setopt (curl_handle, CURLOPT_WRITEDATA, (void *) response);
+    if (curl_res != CURLE_OK) goto curl_error;
+    
+    headers = curl_slist_append (headers, "Content-Type: application/json");
+    if (!headers) goto curl_error;
+    curl_res = curl_easy_setopt (curl_handle, CURLOPT_HTTPHEADER, headers);
     if (curl_res != CURLE_OK) goto curl_error;
 
     curl_res = curl_easy_setopt (curl_handle, CURLOPT_URL, url);
@@ -115,6 +120,7 @@ _Bool tg_post (http_response *response, char *method, json_t *post_json, tg_res 
     if (curl_res != CURLE_OK) goto curl_error;
 
     curl_easy_cleanup (curl_handle);
+    curl_slist_free_all (headers);
     free (post_data);
     return 0;
 
@@ -123,6 +129,7 @@ curl_error:
         free (response->data);
     free (post_data);
 	curl_easy_cleanup (curl_handle);
+    curl_slist_free_all (headers);
     res->ok = TG_CURLFAIL;
     res->error_code = curl_res;
     return 1;
@@ -275,3 +282,50 @@ User_s getMe (tg_res *res)
     return api_s;
 }
 
+Update_s *getUpdates (long long offset, size_t *limit, int timeout, tg_res *res)
+{
+    /*
+     * Makes a getUpdates request.
+     * Use this method to receive incoming updates using long polling.
+     * An Array of Update objects is returned.
+     * https://core.telegram.org/bots/api#getupdates
+     */
+    
+    http_response response;
+    json_t *post, *response_obj, *result;
+    Update_s *api_s = NULL;
+    *res = (tg_res){ 0 };
+    
+    /* Prep post data */
+    post = json_object();
+    
+    if (!post)
+    {
+        res->ok = TG_JSONFAIL;
+        return NULL;
+    }
+    json_object_set_new (post, "offset", json_integer (offset));
+    json_object_set_new (post, "limit", json_integer (*limit));
+    *limit = 0;
+    json_object_set_new (post, "timeout", json_integer (timeout));
+    
+    /* Make request */
+    if (tg_post (&response, "/getUpdates", post, res))
+    {
+        json_decref (post);
+        return NULL;
+    }
+    json_decref (post);
+    
+    /* Checks and gets the result */
+    result = tg_load (&response.data, &response_obj, res);
+    if (!result)
+        return NULL;
+    
+    /* Parse the result */
+    *limit = update_parse (result, &api_s, res);
+
+    /* Clean up and return */
+    json_decref (response_obj);
+    return api_s;
+}

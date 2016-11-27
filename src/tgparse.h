@@ -13,7 +13,7 @@ void parse_double (json_t *root, double **target, char *field, tg_res *res);
 _Bool alloc_obj (size_t obj_size, void *target, tg_res *res);
 
 /* Type parsers */
-void update_parse (json_t *root, Update_s *api_s, tg_res *res);
+size_t update_parse (json_t *root, Update_s **api_s, tg_res *res);
 
 void user_parse (json_t *root, User_s *api_s, tg_res *res);
 void chat_parse (json_t *root, Chat_s *api_s, tg_res *res);
