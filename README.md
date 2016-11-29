@@ -24,12 +24,14 @@ sudo make install
 int main ()
 {
   User_s bot_info;
+  tg_res res;
   char *token = "123456789:AaBbCcDdEeFf";
 
   tg_init (token);
-  getMe (&bot_info);
-  
-  printf ("Hello, I'm %s.\n", bot_info.first_name);
+  bot_info = getMe (&res);
+
+  if (res.ok == TG_OKAY && bot_info.first_name)
+    printf ("Hello, I'm %s.\n", bot_info.first_name);
 
   return 0;
 }
