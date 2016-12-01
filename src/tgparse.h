@@ -1,18 +1,18 @@
 #include <jansson.h>
 
-/* Forward dec */
+// Forward declarations of error object.
 typedef struct tg_res tg_res;
 
-/* Copy type from json object into a target */
+// Copies type from json object into a target.
 void parse_str (json_t *root, char **target, char *field, tg_res *res);
 void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res);
 void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res);
 void parse_double (json_t *root, double **target, char *field, tg_res *res);
 
-/* Allocs space for new type */
+// Allocates space for a Telegram type.
 _Bool alloc_obj (size_t obj_size, void *target, tg_res *res);
 
-/* Type parsers */
+// Type parsers.
 size_t update_parse (json_t *root, Update_s **api_s, tg_res *res);
 
 void user_parse (json_t *root, User_s *api_s, tg_res *res);
@@ -34,11 +34,11 @@ void file_parse (json_t *root, File_s *api_s, tg_res *res);
 void game_parse (json_t *root, Game_s *api_s, tg_res *res);
 void animation_parse (json_t *root, Animation_s *api_s, tg_res *res);
 
-/* Array of type parsers */
+// Array of types parsers. TODO: replace.
 void photosizearr_parse (json_t *root, PhotoSize_s **api_s, size_t *array_size, tg_res *res);
 void messageentityarr_parse (json_t *root, MessageEntity_s **api_s, size_t *array_size, tg_res *res);
 
-/* Type Free Wrappers */
+// Type freers.
 void Update_free (Update_s *api_s, size_t arr_length); 
 
 void User_free (User_s api_s);

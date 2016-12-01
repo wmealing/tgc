@@ -4,7 +4,7 @@
 #include "tgapi.h"
 
 /*
- * Object free helper
+ * Frees a Telegram type.
  */
 
 #define OBJ_FREE(obj, obj_freer) if (obj) { obj_freer (*obj); free (obj); }
@@ -18,8 +18,9 @@
     }\
 
 /*
- * Object parse helper
+ * Parses a Telegram type.
  */
+
 #define OBJ_PARSE(root_json_obj, json_obj, field, obj, obj_type, obj_parser)\
     json_obj = json_object_get (root_json_obj, field);\
     if (json_obj)\
@@ -32,13 +33,13 @@
 void parse_str (json_t *root, char **target, char *field, tg_res *res)
 {
     /*
-     * Copies a string from a JSON object to a target.
+     * Fetches a string from a JSON object and copies to a target.
      */
 
     json_t *field_obj = json_object_get (root, field);
     int str_size;
 
-    if (!field_obj)
+    if (!json_is_string (field_obj))
     {
         *target = NULL;
         return;
@@ -72,12 +73,12 @@ void parse_str (json_t *root, char **target, char *field, tg_res *res)
 void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res)
 {
     /*
-     * Copies an int from a JSON object to a target.
+     * Fetches a integer from a JSON object and copies to a target.
      */
 
     json_t *field_obj = json_object_get (root, field);
 
-    if (!field_obj)
+    if (!json_is_integer (field_obj))
     {
         *target = NULL;
         return;
@@ -106,12 +107,12 @@ void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res)
 void parse_double (json_t *root, double **target, char *field, tg_res *res)
 {
     /*
-     * Copies a double from a JSON object to a target.
+     * Fetches a double from a JSON object and copies to a target.
      */
 
     json_t *field_obj = json_object_get (root, field);
 
-    if (!field_obj)
+    if (!json_is_real (field_obj))
     {
         *target = NULL;
         return;
@@ -135,12 +136,12 @@ void parse_double (json_t *root, double **target, char *field, tg_res *res)
 void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res)
 {
     /*
-     * Copies a bool from a JSON object to a target.
+     * Fetches a boolean from a JSON object and copies to a target.
      */
 
     json_t *field_obj = json_object_get (root, field);
 
-    if (!field_obj)
+    if (!json_is_boolean (field_obj))
     {
         *target = NULL;
         return;
@@ -180,6 +181,11 @@ _Bool alloc_obj (size_t obj_size, void *target, tg_res *res)
 
 size_t update_parse (json_t *root, Update_s **api_s, tg_res *res)
 {
+    /*
+     * Parses an array of Telegram update types.
+     * https://core.telegram.org/bots/api#update
+     */
+
     json_t *update, *field;
     size_t limit;
     
@@ -197,20 +203,21 @@ size_t update_parse (json_t *root, Update_s **api_s, tg_res *res)
         return 0;
     }
 
-    for (int i = 0; i < limit; i++)
+    for (size_t i = 0; i < limit; i++)
     {
         update = json_array_get (root, i);
-        
         if (!update)
         {
             res->ok = TG_JSONFAIL;
             break;
         }
+
         parse_int (update, &(*api_s)[i].update_id, "update_id", res);
         OBJ_PARSE (update, field, "message", (*api_s)[i].message, Message_s, message_parse);
         OBJ_PARSE (update, field, "edited_message", (*api_s)[i].edited_message, Message_s, message_parse);
         OBJ_PARSE (update, field, "channel_post", (*api_s)[i].channel_post, Message_s, message_parse);
-        OBJ_PARSE (update, field, "edited_channel_post", (*api_s)[i].edited_channel_post, Message_s, message_parse);
+        OBJ_PARSE (update, field, "edited_channel_post", 
+                (*api_s)[i].edited_channel_post, Message_s, message_parse);
     }
     
     return limit;
@@ -218,7 +225,12 @@ size_t update_parse (json_t *root, Update_s **api_s, tg_res *res)
 
 void Update_free (Update_s *api_s, size_t arr_length)
 {
-    for (int i = 0; i < arr_length; i++)
+    /*
+     * Free an array of Telegram update types.
+     * Requires the array length to be passed as well.
+     */
+
+    for (size_t i = 0; i < arr_length; i++)
     {
         free (api_s[i].update_id);
         OBJ_FREE (api_s[i].message, Message_free);
@@ -229,6 +241,12 @@ void Update_free (Update_s *api_s, size_t arr_length)
 
     free (api_s);
 }
+
+/*
+ * Telegram type parsers and freers.
+ * Consistent with docs located here:
+ * https://core.telegram.org/bots/api#available-types
+ */
 
 void user_parse (json_t *root, User_s *api_s, tg_res *res)
 {
@@ -358,11 +376,6 @@ void Message_free (Message_s api_s)
 
 void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
 {
-    /*
-     * Parses a MessageEntity object
-     * https://core.telegram.org/bots/api/#messageentity
-     */
-
     json_t *user;
 
     parse_str (root, &api_s->type, "type", res);
@@ -372,6 +385,8 @@ void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
     
     OBJ_PARSE (root, user, "user", api_s->user, User_s, user_parse);
 }
+
+// TODO: Replace with more elegant solution later.
 
 void messageentityarr_parse (json_t *root, MessageEntity_s **api_s, size_t *array_size, tg_res *res)
 {
@@ -414,16 +429,13 @@ void MessageEntity_free (MessageEntity_s api_s)
 
 void photosize_parse (json_t *root, PhotoSize_s *api_s, tg_res *res)
 {
-    /*
-     * Parses a PhotoSize object
-     * https://core.telegram.org/bots/api/#photosize
-     */
-
     parse_str (root, &api_s->file_id, "file_id", res);
     parse_int (root, &api_s->width, "width", res);
     parse_int (root, &api_s->height, "height", res);
     parse_int (root, &api_s->file_size, "file_size", res);
 }
+
+// TODO: Replace with more elegant solution later.
 
 void photosizearr_parse (json_t *root, PhotoSize_s **api_s, size_t *array_size, tg_res *res)
 {
@@ -465,11 +477,6 @@ void PhotoSize_free (PhotoSize_s api_s)
 
 void audio_parse (json_t *root, Audio_s *api_s, tg_res *res)
 {
-    /*
-     * Parses an Audio object
-     * https://core.telegram.org/bots/api/#audio
-     */
-    
     parse_str (root, &api_s->file_id, "file_id", res);
     parse_int (root, &api_s->duration, "duration", res);
     parse_str (root, &api_s->performer, "performer", res);
@@ -490,11 +497,6 @@ void Audio_free (Audio_s api_s)
 
 void document_parse (json_t *root, Document_s *api_s, tg_res *res)
 {
-    /*
-     * Parses a Document object
-     * https://core.telegram.org/bots/api/#document
-     */
-    
     json_t *thumb;
 
     parse_str (root, &api_s->file_id, "file_id", res);

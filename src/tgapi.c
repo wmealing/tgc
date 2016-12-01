@@ -7,25 +7,29 @@
 
 #define TG_URL "https://api.telegram.org/bot"
 
+// Internal use.
+
+CURLSH *tg_handle;
+char tg_token[50];
+
 typedef struct
 {
     char *data;
     size_t size;
 } http_response;
 
-/* curl share handle */
-CURLSH *tg_handle;
-/* api token */
-char tg_token[50] = { 0 };
-
 _Bool tg_init (char *api_token)
 {
     /*
-    ** Initializes the library with a token and curl share handle
+    * Initializes the library with a token and curl share handle.
+    * Call tg_cleanup() when finished with the lib.
     */
     CURLSHcode res;
 
-    strncpy (tg_token, api_token, 49);
+    if (strlen (api_token) < 50)
+        strncpy (tg_token, api_token, 50);
+    else
+        return 1;
 
     tg_handle = curl_share_init();
     if (!tg_handle) return 1;
@@ -39,17 +43,13 @@ _Bool tg_init (char *api_token)
 
 void tg_cleanup (void)
 {
-    /*
-     * Cleans up CURL share handle.
-     */
+    // Cleans up the share handle.
     curl_share_cleanup (tg_handle);
 }
 
 size_t write_response (void *response, size_t size, size_t nmemb, void *write_struct)
 {
-    /*
-     * CURLOPT_WRITEFUNCTION
-     */
+    // CURLOPT_WRITEFUNCTION
 
     size_t real_size = size * nmemb;
     char *old_data = NULL;
@@ -77,9 +77,7 @@ size_t write_response (void *response, size_t size, size_t nmemb, void *write_st
 
 _Bool tg_post (http_response *response, char *method, json_t *post_json, tg_res *res)
 {
-    /*
-     * HTTP post request wrapper
-     */
+    // Post wrapper. Takes JSON object as argument.
 
     extern CURLSH *tg_handle;
     extern char tg_token[50];
@@ -95,10 +93,8 @@ _Bool tg_post (http_response *response, char *method, json_t *post_json, tg_res 
         res->error_code = CURLE_FAILED_INIT;
         return 1;
     }
-    
-    strncat (url, "https://api.telegram.org/bot", 199);
-    strncat (url, tg_token, 199);
-    strncat (url, method, 199);
+   
+    snprintf (url, 199, "%s%s%s", TG_URL, tg_token, method);
     
     post_data = json_dumps (post_json, 0);
     if (!post_data)
@@ -147,9 +143,7 @@ curl_error:
 
 _Bool tg_get (http_response *response, char *method, tg_res *res)
 {
-    /*
-     * HTTP get request wrapper
-     */
+    // Get wrapper.
 
     extern CURLSH *tg_handle;
     extern char tg_token[50];
@@ -163,10 +157,8 @@ _Bool tg_get (http_response *response, char *method, tg_res *res)
         res->error_code = CURLE_FAILED_INIT;
         return 1;
     }
-    
-    strncat (url, "https://api.telegram.org/bot", 199);
-    strncat (url, tg_token, 199);
-    strncat (url, method, 199);
+
+    snprintf (url, 199, "%s%s%s", TG_URL, tg_token, method);
 
     response->data = NULL;
     response->size = 0;
@@ -198,8 +190,8 @@ curl_error:
 _Bool is_okay (json_t *root, tg_res *res)
 {
     /*
-     * Checks if ok:false in the telegram response and
-     * fills in relevant fields.
+     * Checks if ok:false in the Telegram response.
+     * Returns 1 on failure with filled in res.
      */
     
     json_t *ok, *error_code, *description;
@@ -276,19 +268,18 @@ User_s getMe (tg_res *res)
     User_s api_s = { NULL };
     *res = (tg_res){ 0 };
     
-    /* Make request */
+    // Make the request.
     if (tg_get (&response, "/getMe", res))
         return api_s;
 
-    /* Checks and gets the result */
+    // Load and parse the result.
     result = tg_load (&response.data, &response_obj, res);
     if (!result)
         return api_s;
     
-    /* Parse the result */
     user_parse (result, &api_s, res);
 
-    /* Clean up and return */
+    // Clean up and return.
     json_decref (response_obj);
     return api_s;
 }
@@ -307,7 +298,7 @@ Update_s *getUpdates (long long offset, size_t *limit, int timeout, tg_res *res)
     Update_s *api_s = NULL;
     *res = (tg_res){ 0 };
     
-    /* Prep post data */
+    // Prepare JSON post request object.
     post = json_object();
     
     if (!post)
@@ -320,7 +311,7 @@ Update_s *getUpdates (long long offset, size_t *limit, int timeout, tg_res *res)
     *limit = 0;
     json_object_set_new (post, "timeout", json_integer (timeout));
     
-    /* Make request */
+    // Make the request.
     if (tg_post (&response, "/getUpdates", post, res))
     {
         json_decref (post);
@@ -328,15 +319,14 @@ Update_s *getUpdates (long long offset, size_t *limit, int timeout, tg_res *res)
     }
     json_decref (post);
     
-    /* Checks and gets the result */
+    // Load and parse the result.
     result = tg_load (&response.data, &response_obj, res);
     if (!result)
         return NULL;
     
-    /* Parse the result */
     *limit = update_parse (result, &api_s, res);
 
-    /* Clean up and return */
+    // Clean up and return the update array.
     json_decref (response_obj);
     return api_s;
 }
@@ -356,7 +346,7 @@ Message_s sendMessage (char *chat_id, char *text, char *parse_mode, _Bool disabl
     Message_s api_s = {0};
     *res = (tg_res){ 0 };
 
-    /* Prep post data */
+    // Prepare JSON post request object.
     post = json_object();
 
     if (!post)
@@ -373,7 +363,7 @@ Message_s sendMessage (char *chat_id, char *text, char *parse_mode, _Bool disabl
 
     json_object_set_new (post, "reply_to_message_id", json_integer (reply_to_message_id));
 
-    /* Make request */
+    // Make the request.
     if (tg_post (&response, "/sendMessage", post, res))
     {
         json_decref (post);
@@ -381,15 +371,14 @@ Message_s sendMessage (char *chat_id, char *text, char *parse_mode, _Bool disabl
     }
     json_decref (post);
 
-    /* Checks and gets the result */
+    // Load and parse the result.
     result = tg_load (&response.data, &response_obj, res);
     if (!result)
         return api_s;
-
-    /* Parse result */
+    
     message_parse (result, &api_s, res);
 
-    /* Clean up and return */
+    // Clean up and return User type.
     json_decref (response_obj);
     return api_s;
 }
