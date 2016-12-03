@@ -8,6 +8,8 @@ typedef enum tgcode
     TG_OKAY,
     // Telegram returned ok:false. Check the description and error_code.
     TG_NOTOKAY,
+    // Invalid token given to tg_init().
+    TG_TOKENFAIL,
     // Curl failed. Check the error_code.
     TG_CURLFAIL,
     // Json error. Check json_err.
@@ -25,7 +27,7 @@ typedef struct tg_res {
 } tg_res;
 
 // Always initialize the library with a token before using.
-_Bool tg_init (const char *api_token);
+_Bool tg_init (const char *api_token, tg_res *res);
 
 // Clean up the library when you are done.
 // curl_global_cleanup must still be performed.

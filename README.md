@@ -27,11 +27,12 @@ int main ()
   tg_res res;
   char *token = "123456789:AaBbCcDdEeFf";
 
-  tg_init (token);
+  tg_init (token, &res);
   bot_info = getMe (&res);
 
-  if (res.ok == TG_OKAY && bot_info.first_name)
-    printf ("Hello, I'm %s.\n", bot_info.first_name);
+  printf ("Hello, I'm %s.\n", bot_info.first_name);
+
+  User_clean (bot_info);
 
   return 0;
 }

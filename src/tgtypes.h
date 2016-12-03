@@ -329,4 +329,3 @@ struct Animation_s
     char *mime_type;
     json_int_t *file_size;
 };
-

@@ -18,25 +18,41 @@ typedef struct
     size_t size;
 } http_response;
 
-_Bool tg_init (const char *api_token)
+_Bool tg_init (const char *api_token, tg_res *res)
 {
     /*
     * Initializes the library with a token and curl share handle.
     * Call tg_cleanup() when finished with the lib.
     */
-    CURLSHcode res;
+    
+    *res = (tg_res){ 0 };
+
+    tg_handle = curl_share_init();
+    if (!tg_handle)
+    {
+        res->ok = TG_CURLFAIL;
+        return 1;
+    }
+    res->error_code = curl_share_setopt (tg_handle, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
+    if (!tg_handle)
+    {
+        res->ok = TG_CURLFAIL;
+        return 1;
+    }
+    res->error_code = curl_share_setopt (tg_handle, CURLSHOPT_SHARE, CURL_LOCK_DATA_SSL_SESSION);
+    if (!tg_handle)
+    {
+        res->ok = TG_CURLFAIL;
+        return 1;
+    }
 
     if (strlen (api_token) < 50)
         strncpy (tg_token, api_token, 50);
     else
+    {
+        res->ok = TG_TOKENFAIL;
         return 1;
-
-    tg_handle = curl_share_init();
-    if (!tg_handle) return 1;
-    res = curl_share_setopt (tg_handle, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
-    if (res != CURLSHE_OK) return 1;
-    res = curl_share_setopt (tg_handle, CURLSHOPT_SHARE, CURL_LOCK_DATA_SSL_SESSION);
-    if (res != CURLSHE_OK) return 1;
+    }
 
     return 0;
 }
