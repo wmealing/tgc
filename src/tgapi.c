@@ -165,7 +165,7 @@ _Bool tg_get (http_response *response, char *method, tg_res *res)
     extern char tg_token[50];
     CURLcode curl_res;
     CURL *curl_handle = curl_easy_init();
-    char url[200] = {0};
+    char url[200] = { 0 };
 
     if (!curl_handle)
     {
@@ -360,7 +360,7 @@ Message_s sendMessage (const char *chat_id, const char *text, const char *parse_
 
     http_response response;
     json_t *post, *response_obj, *result;
-    Message_s api_s = {0};
+    Message_s api_s = { 0 };
     *res = (tg_res){ 0 };
 
     // Prepare JSON post request object.
@@ -371,6 +371,7 @@ Message_s sendMessage (const char *chat_id, const char *text, const char *parse_
         res->ok = TG_JSONFAIL;
         return api_s;
     }
+
     json_object_set_new (post, "chat_id", json_string (chat_id));
     json_object_set_new (post, "text", json_string (text));
     json_object_set_new (post, "parse_mode", json_string (parse_mode));
@@ -399,3 +400,51 @@ Message_s sendMessage (const char *chat_id, const char *text, const char *parse_
     return api_s;
 }
 
+Message_s forwardMessage (const char *chat_id, const char *from_chat_id,
+        const _Bool disable_notification, const long long message_id, tg_res *res)
+{
+    /*
+     * forwardMessage
+     * Use this method to forward messages of any kind.
+     * On success, the sent Message is returned.
+     * https://core.telegram.org/bots/api#forwardmessage
+     */
+    
+    http_response response;
+    json_t *post, *response_obj, *result;
+    Message_s api_s = { 0 };
+    *res = (tg_res){ 0 };
+    
+    // Prepare the JSON post request object.
+    post = json_object();
+    
+    if (!post)
+    {
+        res->ok = TG_JSONFAIL;
+        return api_s;
+    }
+    
+    json_object_set_new (post, "chat_id", json_string (chat_id));
+    json_object_set_new (post, "from_chat_id", json_string (from_chat_id));
+    json_object_set_new (post, "disable_notification", json_boolean (disable_notification));
+    json_object_set_new (post, "message_id", json_integer (message_id));
+    
+    // Make the request.
+    if (tg_post (&response, "/forwardMessage", post, res))
+    {
+        json_decref (post);
+        return api_s;
+    }
+    json_decref (post);
+    
+    // Load and parse the result.
+    result = tg_load (&response.data, &response_obj, res);
+    if (!result)
+        return api_s;
+    
+    message_parse (result, &api_s, res);
+    
+    // Clean up and return User type.
+    json_decref (response_obj);
+    return api_s;
+}

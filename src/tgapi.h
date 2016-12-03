@@ -64,3 +64,12 @@ Message_s sendMessage (const char *chat_id, const char *text, const char *parse_
         const _Bool disable_web_page_preview, const _Bool disable_notification,
         const long long reply_to_message_id, json_t *reply_markup, tg_res *res);
 
+/*
+ * forwardMessage
+ * Use this method to forward messages of any kind.
+ * On success, the sent Message is returned.
+ * https://core.telegram.org/bots/api#forwardmessage
+ */
+
+Message_s forwardMessage (const char *chat_id, const char *from_chat_id,
+        const _Bool disable_notification, const long long message_id, tg_res *api_s);
