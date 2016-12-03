@@ -25,7 +25,7 @@ typedef struct tg_res {
 } tg_res;
 
 // Always initialize the library with a token before using.
-_Bool tg_init (char *api_token);
+_Bool tg_init (const char *api_token);
 
 // Clean up the library when you are done.
 // curl_global_cleanup must still be performed.
@@ -48,7 +48,7 @@ User_s getMe (tg_res *res);
  * https://core.telegram.org/bots/api#getupdates
  */
 
-Update_s *getUpdates (long long offset, size_t *limit, int timeout, tg_res *res);
+Update_s *getUpdates (const long long offset, size_t *limit, const int timeout, tg_res *res);
 
 /*
  * sendMessage
@@ -58,6 +58,7 @@ Update_s *getUpdates (long long offset, size_t *limit, int timeout, tg_res *res)
  * https://core.telegram.org/bots/api#sendmessage
 */
 
-Message_s sendMessage (char *chat_id, char *text, char *parse_mode, _Bool disable_web_page_preview,
-        _Bool disable_notification, long long reply_to_message_id, tg_res *res);
+Message_s sendMessage (const char *chat_id, const char *text, const char *parse_mode,
+        const _Bool disable_web_page_preview, const _Bool disable_notification,
+        const long long reply_to_message_id, tg_res *res);
 
