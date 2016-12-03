@@ -122,24 +122,19 @@ _Bool tg_post (http_response *response, char *method, json_t *post_json, tg_res 
     response->data = NULL;
     response->size = 0;
 
-    curl_res = curl_easy_setopt (curl_handle, CURLOPT_SHARE, tg_handle);
-    if (curl_res != CURLE_OK) goto curl_error;
-    curl_res = curl_easy_setopt (curl_handle, CURLOPT_WRITEFUNCTION, write_response);
-    if (curl_res != CURLE_OK) goto curl_error;
-    curl_res = curl_easy_setopt (curl_handle, CURLOPT_WRITEDATA, (void *) response);
-    if (curl_res != CURLE_OK) goto curl_error;
-    
+    CURLE_CHECK(curl_res, curl_easy_setopt (curl_handle, CURLOPT_SHARE, tg_handle) );
+    CURLE_CHECK(curl_res, curl_easy_setopt (curl_handle, CURLOPT_WRITEFUNCTION, write_response) );
+    CURLE_CHECK(curl_res, curl_easy_setopt (curl_handle, CURLOPT_WRITEDATA, (void *) response) );
+
     headers = curl_slist_append (headers, "Content-Type: application/json");
     if (!headers) goto curl_error;
-    curl_res = curl_easy_setopt (curl_handle, CURLOPT_HTTPHEADER, headers);
-    if (curl_res != CURLE_OK) goto curl_error;
 
-    curl_res = curl_easy_setopt (curl_handle, CURLOPT_URL, url);
-    if (curl_res != CURLE_OK) goto curl_error;
-    curl_res = curl_easy_setopt (curl_handle, CURLOPT_POSTFIELDS, post_data);
-    if (curl_res != CURLE_OK) goto curl_error;
-    curl_res = curl_easy_perform (curl_handle);
-    if (curl_res != CURLE_OK) goto curl_error;
+    CURLE_CHECK(curl_res, curl_easy_setopt (curl_handle, CURLOPT_HTTPHEADER, headers));
+
+    CURLE_CHECK(curl_res, curl_easy_setopt (curl_handle, CURLOPT_URL, url));
+    CURLE_CHECK(curl_res, curl_easy_setopt (curl_handle, CURLOPT_POSTFIELDS, post_data));
+
+    CURLE_CHECK(curl_res, curl_easy_perform (curl_handle));
 
     curl_easy_cleanup (curl_handle);
     curl_slist_free_all (headers);
