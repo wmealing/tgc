@@ -62,5 +62,5 @@ Update_s *getUpdates (const long long offset, size_t *limit, const int timeout, 
 
 Message_s sendMessage (const char *chat_id, const char *text, const char *parse_mode,
         const _Bool disable_web_page_preview, const _Bool disable_notification,
-        const long long reply_to_message_id, tg_res *res);
+        const long long reply_to_message_id, json_t *reply_markup, tg_res *res);
 

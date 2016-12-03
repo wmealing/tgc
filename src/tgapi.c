@@ -349,7 +349,7 @@ Update_s *getUpdates (const long long offset, size_t *limit, const int timeout, 
 
 Message_s sendMessage (const char *chat_id, const char *text, const char *parse_mode, 
         const _Bool disable_web_page_preview, const _Bool disable_notification, 
-        const long long reply_to_message_id, tg_res *res)
+        const long long reply_to_message_id, json_t *reply_markup, tg_res *res)
 {
     /*
      * sendMessage
@@ -374,11 +374,10 @@ Message_s sendMessage (const char *chat_id, const char *text, const char *parse_
     json_object_set_new (post, "chat_id", json_string (chat_id));
     json_object_set_new (post, "text", json_string (text));
     json_object_set_new (post, "parse_mode", json_string (parse_mode));
-
     json_object_set_new (post, "disable_web_page_preview", json_boolean (disable_web_page_preview));
     json_object_set_new (post, "disable_notification", json_boolean (disable_notification));
-
     json_object_set_new (post, "reply_to_message_id", json_integer (reply_to_message_id));
+    json_object_set (post, "reply_markup", reply_markup);
 
     // Make the request.
     if (tg_post (&response, "/sendMessage", post, res))
