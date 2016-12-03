@@ -1,17 +1,17 @@
 CFLAGS = -ansi -pedantic -Wall -Werror -Wundef -Wstrict-prototypes -g -fPIC -std=c11 -O2 -march=native
 DEPS = -lcurl -ljansson
 
-libtgapi.so: tgapi.o tgparse.o
-	$(CC) $^ -shared -o $@ $(DEPS)
+libtgapi.so: src/tgapi.o src/tgparse.o
+	$(CC) $^ -shared -o src/$@ $(DEPS)
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
 install: libtgapi.so
-	cp libtgapi.so /usr/lib
-	cp tgapi.h /usr/include
-	cp tgtypes.h /usr/include
-	cp tgparse.h /usr/include
+	cp src/libtgapi.so /usr/lib
+	cp src/tgapi.h /usr/include
+	cp src/tgtypes.h /usr/include
+	cp src/tgparse.h /usr/include
 
 uninstall:
 	rm /usr/lib/libtgapi.so
@@ -20,6 +20,4 @@ uninstall:
 	rm /usr/include/tgparse.h
 
 clean:
-	rm -f tgapi.o
-	rm -f tgparse.o
-	rm -f libtgapi.so
+	rm -f src/*.o
