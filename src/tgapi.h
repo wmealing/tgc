@@ -79,11 +79,3 @@ Message_s forwardMessage (const char *chat_id, const char *from_chat_id,
  * Requires curl_res to be in scope.
  */
 
-#define CURLE_CHECK(res, func) do {                                    \
-    res = (func);                                                     \
-    if (res != CURLE_OK) {                                         \
-      fprintf(stderr, "Runtime error: %s returned %d at %s:%d", #func,  curl_res, __FILE__, __LINE__); \
-      goto curl_error; /* or throw or whatever */;                      \
-    }                                                                   \
-  } while (0)
-
