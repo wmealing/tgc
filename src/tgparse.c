@@ -4,7 +4,7 @@
 #include "tgapi.h"
 
 /*
- * Frees a Telegram type.
+ * Frees a Telegram type/array.
  */
 
 #define OBJ_FREE(obj, obj_freer) if (obj) { obj_freer (*obj); free (obj); }
@@ -18,7 +18,7 @@
     }\
 
 /*
- * Parses a Telegram type.
+ * Allocated space for and parses a Telegram type within a type.
  */
 
 #define OBJ_PARSE(root_json_obj, json_obj, field, obj, obj_type, obj_parser)\
@@ -32,10 +32,6 @@
 
 void parse_str (json_t *root, char **target, char *field, tg_res *res)
 {
-    /*
-     * Fetches a string from a JSON object and copies to a target.
-     */
-
     json_t *field_obj = json_object_get (root, field);
     int str_size;
 
@@ -72,10 +68,6 @@ void parse_str (json_t *root, char **target, char *field, tg_res *res)
 
 void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res)
 {
-    /*
-     * Fetches a integer from a JSON object and copies to a target.
-     */
-
     json_t *field_obj = json_object_get (root, field);
 
     if (!json_is_integer (field_obj))
@@ -83,12 +75,6 @@ void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res)
         *target = NULL;
         return;
     }
-
-    /*
-     * json_integer_value works like this:
-     * Returns the associated value of integer, or 0 if json is not a JSON integer.
-     * So no way of properly differentiating errors
-     */
 
     *target = malloc (sizeof (json_int_t));
 
@@ -106,10 +92,6 @@ void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res)
 
 void parse_double (json_t *root, double **target, char *field, tg_res *res)
 {
-    /*
-     * Fetches a double from a JSON object and copies to a target.
-     */
-
     json_t *field_obj = json_object_get (root, field);
 
     if (!json_is_real (field_obj))
@@ -135,10 +117,6 @@ void parse_double (json_t *root, double **target, char *field, tg_res *res)
 
 void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res)
 {
-    /*
-     * Fetches a boolean from a JSON object and copies to a target.
-     */
-
     json_t *field_obj = json_object_get (root, field);
 
     if (!json_is_boolean (field_obj))
@@ -164,10 +142,6 @@ void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res)
 
 _Bool alloc_obj (size_t obj_size, void *target, tg_res *res)
 {
-    /*
-     * Allocates memory for objects and sets res on failure
-     */
-
     *(int **)target = malloc (obj_size);
 
     if (*(int **)target)
@@ -181,11 +155,6 @@ _Bool alloc_obj (size_t obj_size, void *target, tg_res *res)
 
 size_t update_parse (json_t *root, Update_s **api_s, tg_res *res)
 {
-    /*
-     * Parses an array of Telegram update types.
-     * https://core.telegram.org/bots/api#update
-     */
-
     json_t *update, *field;
     size_t limit;
     
@@ -225,11 +194,6 @@ size_t update_parse (json_t *root, Update_s **api_s, tg_res *res)
 
 void Update_free (Update_s *api_s, size_t arr_length)
 {
-    /*
-     * Free an array of Telegram update types.
-     * Requires the array length to be passed as well.
-     */
-
     for (size_t i = 0; i < arr_length; i++)
     {
         free (api_s[i].update_id);
@@ -241,12 +205,6 @@ void Update_free (Update_s *api_s, size_t arr_length)
 
     free (api_s);
 }
-
-/*
- * Telegram type parsers and freers.
- * Consistent with docs located here:
- * https://core.telegram.org/bots/api#available-types
- */
 
 void user_parse (json_t *root, User_s *api_s, tg_res *res)
 {
@@ -386,8 +344,6 @@ void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
     OBJ_PARSE (root, user, "user", api_s->user, User_s, user_parse);
 }
 
-// TODO: Replace with more elegant solution later.
-
 void messageentityarr_parse (json_t *root, MessageEntity_s **api_s, size_t *array_size, tg_res *res)
 {
     json_t *current_entity;
@@ -434,8 +390,6 @@ void photosize_parse (json_t *root, PhotoSize_s *api_s, tg_res *res)
     parse_int (root, &api_s->height, "height", res);
     parse_int (root, &api_s->file_size, "file_size", res);
 }
-
-// TODO: Replace with more elegant solution later.
 
 void photosizearr_parse (json_t *root, PhotoSize_s **api_s, size_t *array_size, tg_res *res)
 {

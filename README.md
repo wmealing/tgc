@@ -23,18 +23,22 @@ sudo make install
 
 int main ()
 {
-  User_s bot_info;
-  tg_res res;
-  char *token = "123456789:AaBbCcDdEeFf";
+    User_s bot_info;
+    tg_res res;
+    char *token = "123456789:AaBbCcDdEeFf";
 
-  tg_init (token, &res);
-  bot_info = getMe (&res);
+    if (tg_init (token, &res))
+        return 1; // Exits if the Library fails to initialize.
 
-  printf ("Hello, I'm %s.\n", bot_info.first_name);
+    bot_info = getMe (&res);
 
-  User_clean (bot_info);
+    if (res.ok == TG_OKAY && bot_info.first_name)
+    {
+        printf ("Hello, I'm %s.\n", bot_info.first_name);
+        User_free (bot_info);
+    }
 
-  return 0;
+    return 0;
 }
 ```
 

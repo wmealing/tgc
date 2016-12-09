@@ -1,0 +1,9 @@
+var searchData=
+[
+  ['update_5ffree',['Update_free',['../group__group4.html#gafb07750437ea8d63dc5477adf0c7f2fd',1,'Update_free(Update_s *api_s, size_t arr_length):&#160;tgparse.c'],['../group__group4.html#gafb07750437ea8d63dc5477adf0c7f2fd',1,'Update_free(Update_s *api_s, size_t arr_length):&#160;tgparse.c']]],
+  ['update_5fparse',['update_parse',['../group__group5.html#ga83be47d6c24dbea7184754e75b610985',1,'update_parse(json_t *root, Update_s **api_s, tg_res *res):&#160;tgparse.c'],['../group__group5.html#ga83be47d6c24dbea7184754e75b610985',1,'update_parse(json_t *root, Update_s **api_s, tg_res *res):&#160;tgparse.c']]],
+  ['user_5ffree',['User_free',['../group__group4.html#gaf3cf6e8ac77cf0267979081495dd1a62',1,'User_free(User_s api_s):&#160;tgparse.c'],['../group__group4.html#gaf3cf6e8ac77cf0267979081495dd1a62',1,'User_free(User_s api_s):&#160;tgparse.c']]],
+  ['user_5fparse',['user_parse',['../group__group5.html#ga42df29786eb7af9bbb06012f89498326',1,'user_parse(json_t *root, User_s *api_s, tg_res *res):&#160;tgparse.c'],['../group__group5.html#ga42df29786eb7af9bbb06012f89498326',1,'user_parse(json_t *root, User_s *api_s, tg_res *res):&#160;tgparse.c']]],
+  ['userprofilephotos_5ffree',['UserProfilePhotos_free',['../group__group4.html#ga0a63a0bddebb5db859da229c1f7df805',1,'UserProfilePhotos_free(UserProfilePhotos_s api_s):&#160;tgparse.c'],['../group__group4.html#ga0a63a0bddebb5db859da229c1f7df805',1,'UserProfilePhotos_free(UserProfilePhotos_s api_s):&#160;tgparse.c']]],
+  ['userprofilephotos_5fparse',['userprofilephotos_parse',['../group__group5.html#ga2f55e43745bb4566dda9a36deb046357',1,'userprofilephotos_parse(json_t *root, UserProfilePhotos_s *api_s, tg_res *res):&#160;tgparse.c'],['../group__group5.html#ga2f55e43745bb4566dda9a36deb046357',1,'userprofilephotos_parse(json_t *root, UserProfilePhotos_s *api_s, tg_res *res):&#160;tgparse.c']]]
+];

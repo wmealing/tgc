@@ -5,7 +5,17 @@
 #include <jansson.h>
 #include "tgapi.h"
 
-// Wrapper for curl functions
+/**
+ * @file
+ * @brief Heart of the library
+ */
+
+/**
+ * @brief Performs a curl action and checks the response.
+ * @see tg_request
+ *
+ * In the case of an error prints to stderr.
+ */
 #define CURLE_CHECK(res, func) do {\
     res = (func);\
     if (res != CURLE_OK)\
@@ -15,53 +25,30 @@
     }\
 } while (0)
 
-
-
-// Internal use.
-
+//! Library curl share handle
 CURLSH *tg_handle;
+//! Library headers
 struct curl_slist *headers;
+//! Api token
 char tg_token[50];
 
+/**
+ * @brief HTTP response object (CURLOPT_WRITEDATA)
+ * @see write_response
+ */
 typedef struct
 {
+    //! The response
     char *data;
+    //! The size of response
     size_t size;
 } http_response;
 
 _Bool tg_init (const char *api_token, tg_res *res)
 {
-    /*
-    * Initializes the library with a token and curl share handle.
-    * Call tg_cleanup() when finished with the lib.
-    */
-    
     *res = (tg_res){ 0 };
-
-    tg_handle = curl_share_init();
-    if (!tg_handle)
-    {
-        res->ok = TG_CURLFAIL;
-        return 1;
-    }
-    res->error_code = curl_share_setopt (tg_handle, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
-    if (!tg_handle)
-    {
-        res->ok = TG_CURLFAIL;
-        return 1;
-    }
-    res->error_code = curl_share_setopt (tg_handle, CURLSHOPT_SHARE, CURL_LOCK_DATA_SSL_SESSION);
-    if (!tg_handle)
-    {
-        res->ok = TG_CURLFAIL;
-        return 1;
-    }
-    headers = curl_slist_append (headers, "Content-Type: application/json");
-    if (!headers)
-    {
-        res->ok = TG_CURLFAIL;
-        return 1;
-    }
+    tg_handle = NULL;
+    headers = NULL;
 
     if (strlen (api_token) < 50)
         strncpy (tg_token, api_token, 50);
@@ -71,20 +58,45 @@ _Bool tg_init (const char *api_token, tg_res *res)
         return 1;
     }
 
+    headers = curl_slist_append (headers, "Content-Type: application/json");
+    if (!headers)
+    {
+        res->ok = TG_CURLFAIL;
+        return 1;
+    }
+
+    tg_handle = curl_share_init();
+    if (!tg_handle)
+    {
+        res->ok = TG_CURLFAIL;
+        return 1;
+    }
+
+    CURLE_CHECK (res->error_code, curl_share_setopt (tg_handle, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS));
+    CURLE_CHECK (res->error_code, curl_share_setopt (tg_handle, CURLSHOPT_SHARE, CURL_LOCK_DATA_SSL_SESSION));
+
     return 0;
+
+curl_error:
+    curl_share_cleanup (tg_handle);
+    curl_slist_free_all (headers);
+    return 1;
 }
 
 void tg_cleanup (void)
 {
-    // Cleans up the share handle.
     curl_share_cleanup (tg_handle);
     curl_slist_free_all (headers);
 }
 
+/**
+ * @brief Writes response to http_response (CURLOPT_WRITEFUNCTION)
+ * @see http_response
+ *
+ * https://curl.haxx.se/libcurl/c/CURLOPT_WRITEFUNCTION.html
+ */
 size_t write_response (void *response, size_t size, size_t nmemb, void *write_struct)
 {
-    // CURLOPT_WRITEFUNCTION
-
     size_t real_size = size * nmemb;
     char *old_data = NULL;
     http_response *mem = (http_response *) write_struct;
@@ -109,10 +121,18 @@ size_t write_response (void *response, size_t size, size_t nmemb, void *write_st
     return real_size;
 }
 
+/**
+ * @brief Wrapper for Telegram http requests
+ * 
+ * @param response Stores the response here
+ * @param method Method appended to the base Telegram url
+ * @param post_json Optional post json object
+ * @param res Error Object
+ *
+ * @returns 0 on success and 1 on error.
+ */
 _Bool tg_request (http_response *response, char *method, json_t *post_json, tg_res *res)
 {
-    // Post wrapper. Takes JSON object as argument.
-
     CURL *curl_handle;
     char url[200] = { 0 };
     char *post_data = NULL;
@@ -166,13 +186,20 @@ curl_error:
     return 1;
 }
 
+
+/**
+ * @brief Checks if Telegram responds with ok:true
+ *
+ * If the ok object resolves to false the error code and
+ * error description are copied to \p res.
+ *
+ * @param root Json object of the Telegram response
+ * @param res Error object
+ *
+ * @returns 0 on success and 1 on error.
+ */
 _Bool is_okay (json_t *root, tg_res *res)
 {
-    /*
-     * Checks if ok:false in the Telegram response.
-     * Returns 1 on failure with filled in res.
-     */
-    
     json_t *ok, *error_code, *description;
     const char *err_description;
 
@@ -202,11 +229,21 @@ _Bool is_okay (json_t *root, tg_res *res)
     }
 }
 
+/**
+ * @brief Checks and returns the result from a Telegram object.
+ *
+ * @param data Telegram response. Freed before returning.
+ * @param resp_obj Stores the response object here to allow the caller to free
+ * @param res Error Object
+ *
+ * Calls is_okay and attempts to return the result
+ *
+ * @returns 0 on success and 1 on error.
+ */
 json_t *tg_load (char **data, json_t **resp_obj, tg_res *res)
 {
     json_t *result;
 
-    /* Loads the response. */
     *resp_obj = json_loads (*data, 0, &res->json_err);
     free (*data);
 
@@ -216,14 +253,12 @@ json_t *tg_load (char **data, json_t **resp_obj, tg_res *res)
         return NULL;
     }
 
-    /* Checks if ok:true */
     if (is_okay (*resp_obj, res))
     {
         json_decref (*resp_obj);
         return NULL;
     }
 
-    /* Loads the result */
     result = json_object_get (*resp_obj, "result");
     if (!result)
     {
@@ -236,48 +271,31 @@ json_t *tg_load (char **data, json_t **resp_obj, tg_res *res)
 
 User_s getMe (tg_res *res)
 {
-    /*
-     * Makes a getMe request
-     * Returns basic information about the bot in form of a User object.
-     * https://core.telegram.org/bots/api/#getme
-     */
-
     http_response response;
     json_t *response_obj, *result;
     User_s api_s = { NULL };
     *res = (tg_res){ 0 };
     
-    // Make the request.
     if (tg_request (&response, "/getMe", NULL, res))
         return api_s;
 
-    // Load and parse the result.
     result = tg_load (&response.data, &response_obj, res);
     if (!result)
         return api_s;
     
     user_parse (result, &api_s, res);
 
-    // Clean up and return.
     json_decref (response_obj);
     return api_s;
 }
 
 Update_s *getUpdates (const long long offset, size_t *limit, const int timeout, tg_res *res)
 {
-    /*
-     * Makes a getUpdates request.
-     * Use this method to receive incoming updates using long polling.
-     * An Array of Update objects is returned.
-     * https://core.telegram.org/bots/api#getupdates
-     */
-    
     http_response response;
     json_t *post, *response_obj, *result;
     Update_s *api_s = NULL;
     *res = (tg_res){ 0 };
     
-    // Prepare JSON post request object.
     post = json_object();
     
     if (!post)
@@ -290,18 +308,15 @@ Update_s *getUpdates (const long long offset, size_t *limit, const int timeout, 
     *limit = 0;
     json_object_set_new (post, "timeout", json_integer (timeout));
     
-    // Make the request.
     if (tg_request (&response, "/getUpdates", post, res))
         return NULL;
     
-    // Load and parse the result.
     result = tg_load (&response.data, &response_obj, res);
     if (!result)
         return NULL;
     
     *limit = update_parse (result, &api_s, res);
 
-    // Clean up and return the update array.
     json_decref (response_obj);
     return api_s;
 }
@@ -310,19 +325,11 @@ Message_s sendMessage (const char *chat_id, const char *text, const char *parse_
         const _Bool disable_web_page_preview, const _Bool disable_notification, 
         const long long reply_to_message_id, json_t *reply_markup, tg_res *res)
 {
-    /*
-     * sendMessage
-     * Use this method to send text messages. 
-     * On success, the sent Message is returned.
-     * https://core.telegram.org/bots/api#sendmessage
-     */
-
     http_response response;
     json_t *post, *response_obj, *result;
     Message_s api_s = { 0 };
     *res = (tg_res){ 0 };
 
-    // Prepare JSON post request object.
     post = json_object();
 
     if (!post)
@@ -339,18 +346,15 @@ Message_s sendMessage (const char *chat_id, const char *text, const char *parse_
     json_object_set_new (post, "reply_to_message_id", json_integer (reply_to_message_id));
     json_object_set (post, "reply_markup", reply_markup);
 
-    // Make the request.
     if (tg_request (&response, "/sendMessage", post, res))
         return api_s;
 
-    // Load and parse the result.
     result = tg_load (&response.data, &response_obj, res);
     if (!result)
         return api_s;
     
     message_parse (result, &api_s, res);
 
-    // Clean up and return User type.
     json_decref (response_obj);
     return api_s;
 }
@@ -358,19 +362,11 @@ Message_s sendMessage (const char *chat_id, const char *text, const char *parse_
 Message_s forwardMessage (const char *chat_id, const char *from_chat_id,
         const _Bool disable_notification, const long long message_id, tg_res *res)
 {
-    /*
-     * forwardMessage
-     * Use this method to forward messages of any kind.
-     * On success, the sent Message is returned.
-     * https://core.telegram.org/bots/api#forwardmessage
-     */
-    
     http_response response;
     json_t *post, *response_obj, *result;
     Message_s api_s = { 0 };
     *res = (tg_res){ 0 };
     
-    // Prepare the JSON post request object.
     post = json_object();
     
     if (!post)
@@ -384,18 +380,15 @@ Message_s forwardMessage (const char *chat_id, const char *from_chat_id,
     json_object_set_new (post, "disable_notification", json_boolean (disable_notification));
     json_object_set_new (post, "message_id", json_integer (message_id));
     
-    // Make the request.
     if (tg_request (&response, "/forwardMessage", post, res))
         return api_s;
     
-    // Load and parse the result.
     result = tg_load (&response.data, &response_obj, res);
     if (!result)
         return api_s;
     
     message_parse (result, &api_s, res);
     
-    // Clean up and return User type.
     json_decref (response_obj);
     return api_s;
 }
