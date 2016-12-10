@@ -30,6 +30,24 @@
     } else\
         obj = NULL
 
+#define OBJ_ARR_PARSE(root_json_obj, json_obj, field, obj, obj_type, obj_parser, obj_length)\
+    {\
+        json_obj = json_object_get (root_json_obj, field);\
+        obj_length = json_array_size (json_obj);\
+        \
+        if (obj_length)\
+        {\
+            if (!alloc_obj (sizeof (obj_type) * obj_length, &obj, res))\
+            {\
+                for (int i = 0; i < obj_length; i++)\
+                    obj_parser (json_array_get (json_obj, i), &obj[i], res);\
+            } else\
+            {\
+                obj = NULL;\
+            }\
+        }\
+    }\
+
 void parse_str (json_t *root, char **target, char *field, tg_res *res)
 {
     json_t *field_obj = json_object_get (root, field);
@@ -263,15 +281,10 @@ void message_parse (json_t *root, Message_s *api_s, tg_res *res)
     parse_bool (root, &api_s->channel_chat_created, "channel_chat_created", res);
     parse_int (root, &api_s->migrate_to_chat_id, "migrate_to_chat_id", res);
     parse_int (root, &api_s->migrate_from_chat_id, "migrate_from_chat_id", res);
-
-    field = json_object_get (root, "entities");
-    messageentityarr_parse (field, &api_s->entities, &api_s->entities_len, res);
-
-    field = json_object_get (root, "photo");
-    photosizearr_parse (field, &api_s->photo, &api_s->photo_len, res);
-
-    field = json_object_get (root, "new_chat_photo");
-    photosizearr_parse (field, &api_s->new_chat_photo, &api_s->new_chat_photo_len, res);
+    
+    OBJ_ARR_PARSE (root, field, "entities", api_s->entities, MessageEntity_s, messageentity_parse, api_s->entities_len);
+    OBJ_ARR_PARSE (root, field, "photo", api_s->photo, PhotoSize_s, photosize_parse, api_s->photo_len);
+    OBJ_ARR_PARSE (root, field, "new_chat_photo", api_s->new_chat_photo, PhotoSize_s, photosize_parse, api_s->new_chat_photo_len);
 
     OBJ_PARSE (root, field, "from", api_s->from, User_s, user_parse);
     OBJ_PARSE (root, field, "chat", api_s->chat, Chat_s, chat_parse);
@@ -344,35 +357,6 @@ void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res)
     OBJ_PARSE (root, user, "user", api_s->user, User_s, user_parse);
 }
 
-void messageentityarr_parse (json_t *root, MessageEntity_s **api_s, size_t *array_size, tg_res *res)
-{
-    json_t *current_entity;
-    size_t mem_size;
-
-    if (!root)
-    {
-        *api_s = NULL;
-        *array_size = 0;
-        return;
-    }
-
-    *array_size = json_array_size (root);
-
-    if (*array_size)
-    {
-        mem_size = sizeof (MessageEntity_s) * *array_size;
-        if (!alloc_obj (mem_size, api_s, res))
-        {
-            for (int i = 0; i < *array_size; i++)
-            {
-                current_entity = json_array_get (root, i);
-                messageentity_parse (current_entity, &((*api_s)[i]), res);
-            }
-        }
-    } else
-        *api_s = NULL;
-}
-
 void MessageEntity_free (MessageEntity_s api_s)
 {
     free (api_s.type);
@@ -389,36 +373,6 @@ void photosize_parse (json_t *root, PhotoSize_s *api_s, tg_res *res)
     parse_int (root, &api_s->width, "width", res);
     parse_int (root, &api_s->height, "height", res);
     parse_int (root, &api_s->file_size, "file_size", res);
-}
-
-void photosizearr_parse (json_t *root, PhotoSize_s **api_s, size_t *array_size, tg_res *res)
-{
-    json_t *current_photo;
-    size_t mem_size;
-
-    if (!root)
-    {
-        *api_s = NULL;
-        *array_size = 0;
-        return;
-    }
-
-    *array_size = json_array_size (root);
-
-    if (*array_size)
-    {
-        mem_size = sizeof (PhotoSize_s) * *array_size;
-
-        if (!alloc_obj (mem_size, api_s, res))
-        {
-            for (int i = 0; i < *array_size; i++)
-            {
-                current_photo = json_array_get (root, i);
-                photosize_parse (current_photo, &((*api_s)[i]), res);
-            }
-        }
-    } else
-        *api_s = NULL;
 }
 
 void PhotoSize_free (PhotoSize_s api_s)
@@ -591,8 +545,8 @@ void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *
 
     parse_int (root, &api_s->total_count, "total_count", res);
 
-    photos = json_object_get (root, "photos");
-    photosizearr_parse (photos, &api_s->photos, &api_s->photos_len, res);
+    OBJ_ARR_PARSE (root, photos, "photos", api_s->photos, PhotoSize_s, photosize_parse, api_s->photos_len)
+    
 }
 
 void UserProfilePhotos_free (UserProfilePhotos_s api_s)
@@ -624,11 +578,8 @@ void game_parse (json_t *root, Game_s *api_s, tg_res *res)
     parse_str (root, &api_s->description, "description", res);
     parse_str (root, &api_s->text, "text", res);
 
-    photo = json_object_get (root, "photo");
-    photosizearr_parse (photo, &api_s->photo, &api_s->photo_len, res);
-
-    text_entities = json_object_get (root, "text_entities");
-    messageentityarr_parse (text_entities, &api_s->text_entities, &api_s->text_entities_len, res);
+    OBJ_ARR_PARSE (root, photo, "photo", api_s->photo, PhotoSize_s, photosize_parse, api_s->photo_len);
+    OBJ_ARR_PARSE (root, text_entities, "text_entities", api_s->text_entities, MessageEntity_s, messageentity_parse, api_s->text_entities_len);
 
     OBJ_PARSE (root, animation, "animation", api_s->animation, Animation_s, animation_parse);
 }

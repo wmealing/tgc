@@ -294,10 +294,6 @@ void game_parse (json_t *root, Game_s *api_s, tg_res *res);
  */
 void animation_parse (json_t *root, Animation_s *api_s, tg_res *res);
 
-//TODO: Replace with macro.
-void photosizearr_parse (json_t *root, PhotoSize_s **api_s, size_t *array_size, tg_res *res);
-void messageentityarr_parse (json_t *root, MessageEntity_s **api_s, size_t *array_size, tg_res *res);
-
 /**@}*/
 
 /**
