@@ -4,6 +4,9 @@ DEPS = -lcurl -ljansson
 libtgapi.so: src/tgapi.o src/tgparse.o
 	$(CC) $^ -shared -o src/$@ $(DEPS)
 
+docs:
+	doxygen doxygen/Doxyfile
+
 %.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
