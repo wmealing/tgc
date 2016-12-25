@@ -15,6 +15,16 @@ make
 sudo make install
 ```
 
+```
+If you're using cmake to build this project in a cross platform manner
+
+git clone https://github.com/77616c6964/tgc.git
+cd tgc
+mkdir build && cd build
+cmake install ..
+
+```
+
 
 ## Example
 
