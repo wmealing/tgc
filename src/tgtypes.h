@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup group3 Telegram Types
+ * @defgroup group5 Telegram Types
  * @brief Telegram types.
  *
  * Follows the naming convention available
@@ -49,11 +49,28 @@ typedef struct Venue_s Venue_s;
 typedef struct UserProfilePhotos_s UserProfilePhotos_s;
 //! Typedef of File type
 typedef struct File_s File_s;
+//! Typedef for CallbackQuery
+typedef struct CallbackQuery_s CallbackQuery_s;
+
+//! Typedef for InlineQuery_s
+typedef struct InlineQuery_s InlineQuery_s;
+//! Typedef for ChosenInlineQuery_s
+typedef struct ChosenInlineResult_s ChosenInlineResult_s;
 
 //! Typedef of Game type
 typedef struct Game_s Game_s;
 //! Typedef of Animation type
 typedef struct Animation_s Animation_s;
+
+/**@}*/
+
+/**
+ * @defgroup group6 Base Types
+ * @ingroup group5
+ * @brief The following objects allow your bot to interact with standard messages.
+ *
+ * @{
+ */
 
 /**
  * @brief Update type
@@ -73,6 +90,12 @@ struct Update_s
     Message_s *channel_post;
     //! Optional. New version of a channel post that is known to the bot and was edited
     Message_s *edited_channel_post;
+    //! Optional. New incoming inline query
+    InlineQuery_s *inline_query;
+    //! Optional. The result of an inline query that was chosen by a user and sent to their chat partner.
+    ChosenInlineResult_s *chosen_inline_result;
+    //! Optional. New incoming callback query
+    CallbackQuery_s *callback_query;
 };
 
 /**
@@ -428,6 +451,89 @@ struct File_s
 };
 
 /**
+ * @brief CallbackQuery type
+ *
+ * See <a href="https://core.telegram.org/bots/api/#callbackquery">here</a>
+ * for more information.
+ */
+struct CallbackQuery_s
+{
+    //! Unique identifier for this query
+    char *id;
+    //! Sender
+    User_s *from;
+    //! Optional. Message with the callback button that originated the query.
+    Message_s *message;
+    //! Optional. Identifier of the message sent via the bot in inline mode, that originated the query.
+    char *inline_message_id;
+    //! Global identifier.
+    char *chat_instance;
+    //! Optional. Data associated with the callback button.
+    char *data;
+    //! Optional. Short name of a Game to be returned.
+    char *game_short_name;
+};
+
+/**@}*/
+
+/**
+ * @defgroup group7 Inline Mode
+ * @ingroup group5
+ * @brief The following objects allow your bot to work in inline mode.
+ *
+ * @{
+ */
+
+/**
+ * @brief InlineQuery type
+ *
+ * See <a href="https://core.telegram.org/bots/api/#inlinequery">here</a>
+ * for more information.
+ */
+struct InlineQuery_s
+{
+    //! Unique identifier for this query
+    char *id;
+    //! Sender
+    User_s *from;
+    //! Optional. Sender location, only for bots that request user location
+    Location_s *location;
+    //! Text of the query (up to 512 characters)
+    char *query;
+    //! Offset of the results to be returned, can be controlled by the bot
+    char *offset;
+};
+
+/**
+ * @brief ChosenInlineResult type
+ *
+ * See <a href="https://core.telegram.org/bots/api/#choseninlineresult">here</a>
+ * for more information.
+ */
+struct ChosenInlineResult_s
+{
+    //! The unique identifier for the result that was chosen
+    char *result_id;
+    //! The user that chose the result
+    User_s *from;
+    //! Optional. Sender location, only for bots that require user location
+    Location_s *location;
+    //! Optional. Identifier of the sent inline message. 
+    char *inline_message_id;
+    //! The query that was used to obtain the result
+    char *query;
+};
+/**@}*/
+
+/**
+ * @defgroup group8 Game Methods
+ * @ingroup group5
+ * @brief The following objects allow you to interact with the HTML5 games api.
+ *
+ * @{
+ */
+
+/**
  * @brief ReplyKeyboardMarkup type
  *
  * See <a href="https://core.telegram.org/bots/api#game">here</a>
@@ -474,4 +580,3 @@ struct Animation_s
 };
 
 /**@}*/
-

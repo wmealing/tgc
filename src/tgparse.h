@@ -6,7 +6,7 @@
  */
 
 /**
- * @defgroup group5 Type parsers
+ * @defgroup group3 Type parsers
  * @brief Internally used functions to parse Telegram results.
  * @{
  */
