@@ -205,6 +205,9 @@ size_t update_parse (json_t *root, Update_s **api_s, tg_res *res)
         OBJ_PARSE (update, field, "channel_post", (*api_s)[i].channel_post, Message_s, message_parse);
         OBJ_PARSE (update, field, "edited_channel_post", 
                 (*api_s)[i].edited_channel_post, Message_s, message_parse);
+        OBJ_PARSE (update, field, "inline_query", (*api_s)[i].inline_query, InlineQuery_s, inlinequery_parse);
+        OBJ_PARSE (update, field, "chosen_inline_result", (*api_s)[i].chosen_inline_result, ChosenInlineResult_s, choseninlineresult_parse);
+        OBJ_PARSE (update, field, "callback_query", (*api_s)[i].callback_query, CallbackQuery_s, callbackquery_parse);
     }
     
     return limit;
