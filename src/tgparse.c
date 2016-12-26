@@ -147,7 +147,7 @@ void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res)
 
     if (*target)
     {
-        **target = json_boolean_value (field_obj);
+        **target = json_is_true (field_obj);
 
         return;
     }

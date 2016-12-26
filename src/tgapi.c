@@ -211,7 +211,7 @@ _Bool is_okay (json_t *root, tg_res *res)
         return 1;
     }
 
-    if (json_boolean_value (ok))
+    if (json_is_true (ok))
         return 0;
     else
     {
