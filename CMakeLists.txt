@@ -12,6 +12,9 @@ include_directories(src)
 # Find source files
 file(GLOB SOURCES src/*.c)
 
+# Find header files
+file(GLOB HEADERS src/*.h)
+
 # Create shared library
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
