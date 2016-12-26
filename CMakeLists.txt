@@ -22,7 +22,7 @@ find_package ( CURL )
 find_package ( JANSSON )
 
 # Install library
-install(TARGETS ${PROJECT_NAME} DESTINATION lib/${PROJECT_NAME})
+# install(TARGETS ${PROJECT_NAME} DESTINATION lib/${PROJECT_NAME})
 
 include_directories(${CURL_INCLUDE_DIRS})
 target_link_libraries (tgapi ${CURL_LIBRARIES})
@@ -30,7 +30,12 @@ target_link_libraries (tgapi ${JANSSON_LIBRARIES})
 
 
 message(STATUS "********************************************")
-message(STATUS "********** ${PROJECT_NAME} build options : **********")
+message(STATUS "********** ${PROJECT_NAME} build options : ***********")
 message(STATUS "CURL support:    ${CURL_FOUND}")
 message(STATUS "JANSSON support: ${JANSSON_FOUND}")
 message(STATUS "********************************************")
+
+install(TARGETS tgapi DESTINATION lib)
+install(FILES ${HEADERS} DESTINATION include)
+
+

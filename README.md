@@ -10,7 +10,7 @@ apt install libcurl-dev libjansson-dev
 Afterwards to clone and compile execute the following commands:
 ```bash
 git clone https://github.com/77616c6964/tgc.git
-cd tgc/src
+cd tgc/
 make
 sudo make install
 ```
@@ -22,7 +22,7 @@ git clone https://github.com/77616c6964/tgc.git
 cd tgc
 mkdir build && cd build
 cmake install ..
-
+make
 ```
 
 
