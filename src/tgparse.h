@@ -11,8 +11,11 @@
  * @{
  */
 
-//! Forward dec of error type
+//! Typedef of tg_res.
+ #ifndef error_struct
+ #define error_struct
 typedef struct tg_res tg_res;
+#endif
 
 /**
  * @brief Copies a string from a json object to a target.

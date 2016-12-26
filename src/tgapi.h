@@ -46,7 +46,7 @@ typedef enum tgcode
  * for information on errors. If tg_res.ok is #TG_OKAY there is no need to check
  * any other member of the struct.
  */
-typedef struct tg_res
+struct tg_res
 {
     //! tgcode value indicating any errors.
     tgcode ok;
@@ -57,7 +57,13 @@ typedef struct tg_res
     //! Stores any Jansson errors.
     /*! If empty this probably indicates the library ran out of memory. */
     json_error_t json_err;
-} tg_res;
+};
+
+//! Typedef of tg_res.
+#ifndef error_struct
+#define error_struct
+typedef struct tg_res tg_res;
+#endif
 
 /**
  * @brief Initialize the library.
