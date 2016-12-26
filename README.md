@@ -1,5 +1,5 @@
-# tgc
-A simple to use thread safe library to interact with the Telegram bot API.
+# tgc [![Build Status](https://travis-ci.org/77616c6964/tgc.svg?branch=master)](https://travis-ci.org/dwyl/esta)
+A simple to use thread safe library to interact with the Telegram bot API. 
 
 ## Install
 Before being able to compile you'll need libcurl and jansson. On Debian based distros this can be done like so:
