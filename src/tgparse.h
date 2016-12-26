@@ -271,6 +271,36 @@ void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *
 void file_parse (json_t *root, File_s *api_s, tg_res *res);
 
 /**
+ * @brief Parses an CallbackQuery type.
+ * @see CallbackQuery_s
+ *
+ * @param root Json object containing a CallbackQuery type.
+ * @param api_s Target for the parsed CallbackQuery_s.
+ * @param res Error Object.
+ */
+void callbackquery_parse (json_t *root, CallbackQuery_s *api_s, tg_res *res);
+
+/**
+ * @brief Parses an InlineQuery type.
+ * @see InlineQuery_s
+ *
+ * @param root Json object containing a InlineQuery type.
+ * @param api_s Target for the parsed File_s.
+ * @param res Error Object.
+ */
+void inlinequery_parse (json_t *root, InlineQuery_s *api_s, tg_res *res);
+
+ /**
+  * @brief Parses a ChosenInlineResult type.
+  * @see ChosenInlineResult_s
+  *
+ * @param root Json object containing a ChosenInlineResult type.
+ * @param api_s Target for the parsed ChosenInlineResult_s.
+ * @param res Error Object.
+  */
+void choseninlineresult_parse (json_t *root, ChosenInlineResult_s *api_s, tg_res *res);
+
+/**
  * @brief Parses a Game type.
  * @see Game_s
  *
@@ -422,6 +452,30 @@ void Venue_free (Venue_s api_s);
  * @param api_s Object to free
  */
 void UserProfilePhotos_free (UserProfilePhotos_s api_s);
+
+/**
+ * @brief Frees a CallbackQuery type
+ * @see CallbackQuery_s
+ *
+ * @param api_s Object to free
+ */
+void CallbackQuery_free (CallbackQuery_s api_s);
+
+/**
+ * @brief Frees a InlineQuery type
+ * @see InlineQuery_s
+ *
+ * @param api_s Object to free
+ */
+void InlineQuery_free (InlineQuery_s api_s);
+
+/**
+ * @brief Frees a ChosenInlineResult type
+ * @see ChosenInlineResult_s
+ *
+ * @param api_s Object to free
+ */
+void ChosenInlineResult_free (ChosenInlineResult_s api_s);
 
 /**
  * @brief Frees a File type

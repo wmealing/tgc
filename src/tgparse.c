@@ -570,6 +570,76 @@ void File_free (File_s api_s)
     free (api_s.file_path);
 }
 
+void callbackquery_parse (json_t *root, CallbackQuery_s *api_s, tg_res *res)
+{
+    json_t *from, *message;
+
+    parse_str (root, &api_s->id, "id", res);
+    parse_str (root, &api_s->inline_message_id, "inline_message_id", res);
+    parse_str (root, &api_s->chat_instance, "chat_instance", res);
+    parse_str (root, &api_s->data, "data", res);
+    parse_str (root, &api_s->game_short_name, "game_short_name", res);
+
+    OBJ_PARSE (root, from, "from", api_s->from, User_s, user_parse);
+    OBJ_PARSE (root, message, "message", api_s->message, Message_s, message_parse);
+}
+
+void CallbackQuery_free (CallbackQuery_s api_s)
+{
+    free (api_s.id);
+    free (api_s.inline_message_id);
+    free (api_s.chat_instance);
+    free (api_s.data);
+    free (api_s.game_short_name);
+
+    OBJ_FREE (api_s.from, User_free);
+    OBJ_FREE (api_s.message, Message_free);
+}
+
+void inlinequery_parse (json_t *root, InlineQuery_s *api_s, tg_res *res)
+{
+    json_t *from, *location;
+
+    parse_str (root, &api_s->id, "id", res);
+    parse_str (root, &api_s->query, "query", res);
+    parse_str (root, &api_s->offset, "offset", res);
+
+    OBJ_PARSE (root, from, "from", api_s->from, User_s, user_parse);
+    OBJ_PARSE (root, location, "location", api_s->location, Location_s, location_parse);
+}
+
+void InlineQuery_free (InlineQuery_s api_s)
+{
+    free (api_s.id);
+    free (api_s.query);
+    free (api_s.offset);
+
+    OBJ_FREE (api_s.from, User_free);
+    OBJ_FREE (api_s.location, Location_free);
+}
+
+void choseninlineresult_parse (json_t *root, ChosenInlineResult_s *api_s, tg_res *res)
+{
+    json_t *from, *location;
+
+    parse_str (root, &api_s->result_id, "result_id", res);
+    parse_str (root, &api_s->inline_message_id, "inline_message_id", res);
+    parse_str (root, &api_s->query, "query", res);
+
+    OBJ_PARSE (root, from, "from", api_s->from, User_s, user_parse);
+    OBJ_PARSE (root, location, "location", api_s->location, Location_s, location_parse);
+}
+
+void ChosenInlineResult_free (ChosenInlineResult_s api_s)
+{
+    free (api_s.result_id);
+    free (api_s.inline_message_id);
+    free (api_s.query);
+
+    OBJ_FREE (api_s.from, User_free);
+    OBJ_FREE (api_s.location, Location_free);
+}
+
 void game_parse (json_t *root, Game_s *api_s, tg_res *res)
 {
     json_t *photo, *text_entities, *animation;
