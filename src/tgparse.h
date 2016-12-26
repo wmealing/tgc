@@ -22,8 +22,6 @@ typedef struct tg_res tg_res;
  * @param target Where the string wil be copies to.
  * @param field The name of the json field where the string is.
  * @param res Error object.
- *
- * @returns Nothing. Sets \p target to NULL if the string value doesn't exist.
  */
 void parse_str (json_t *root, char **target, char *field, tg_res *res);
 
@@ -35,8 +33,6 @@ void parse_str (json_t *root, char **target, char *field, tg_res *res);
  * @param target Where the long long will be copied to.
  * @param field The name of the json field where the long long is.
  * @param res Error object.
- *
- * @returns Nothing. Sets \p target to NULL if the long long value doesn't exist.
  */
 void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res);
 
@@ -48,8 +44,6 @@ void parse_int (json_t *root, json_int_t **target, char *field, tg_res *res);
  * @param target Where the boolean value will be copied to.
  * @param field The name of the json field where the boolean is.
  * @param res Error Object.
- *
- * @returns Nothing. Sets \p target to NULL if the boolean value doesn't exist.
  */
 void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res);
 
@@ -61,8 +55,6 @@ void parse_bool (json_t *root, _Bool **target, char *field, tg_res *res);
  * @param target Where the double value will be copied to.
  * @param field The name of the json field where the double is.
  * @param res Error Object.
- *
- * @returns Nothing. Sets \p target to NULL if the double value doesn't exist.
  */
 void parse_double (json_t *root, double **target, char *field, tg_res *res);
 
@@ -72,8 +64,6 @@ void parse_double (json_t *root, double **target, char *field, tg_res *res);
  * @param obj_size Size of allocation. `sizeof (obj)`
  * @param target Allocation target.
  * @param res Error object.
- *
- * @returns 0 on success on 1 on failure (OOM).
  */
 _Bool alloc_obj (size_t obj_size, void *target, tg_res *res);
 
@@ -84,9 +74,6 @@ _Bool alloc_obj (size_t obj_size, void *target, tg_res *res);
  * @param root Json object containing an array of updates.
  * @param api_s Target for the array of updates.
  * @param res Error object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
- *
  */
 size_t update_parse (json_t *root, Update_s **api_s, tg_res *res);
 
@@ -97,8 +84,6 @@ size_t update_parse (json_t *root, Update_s **api_s, tg_res *res);
  * @param root Json object containing an array of updates.
  * @param api_s Target for the User_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void user_parse (json_t *root, User_s *api_s, tg_res *res);
 
@@ -109,8 +94,6 @@ void user_parse (json_t *root, User_s *api_s, tg_res *res);
  * @param root Json object containing a User type.
  * @param api_s Target for the parsed Chat_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void chat_parse (json_t *root, Chat_s *api_s, tg_res *res);
 
@@ -121,8 +104,6 @@ void chat_parse (json_t *root, Chat_s *api_s, tg_res *res);
  * @param root Json object containing a Message type.
  * @param api_s Target for the parsed Chat_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void message_parse (json_t *root, Message_s *api_s, tg_res *res);
 
@@ -133,8 +114,6 @@ void message_parse (json_t *root, Message_s *api_s, tg_res *res);
  * @param root Json object containing a MessageEntity type.
  * @param api_s Target for the parsed MessageEntity_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res);
 
@@ -145,8 +124,6 @@ void messageentity_parse (json_t *root, MessageEntity_s *api_s, tg_res *res);
  * @param root Json object containing a PhotoSize type.
  * @param api_s Target for the parsed PhotoSize_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void photosize_parse (json_t *root, PhotoSize_s *api_s, tg_res *res);
 
@@ -157,8 +134,6 @@ void photosize_parse (json_t *root, PhotoSize_s *api_s, tg_res *res);
  * @param root Json object containing an Audio type.
  * @param api_s Target for the parsed Audio_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void audio_parse (json_t *root, Audio_s *api_s, tg_res *res);
 
@@ -169,8 +144,6 @@ void audio_parse (json_t *root, Audio_s *api_s, tg_res *res);
  * @param root Json object containing Document type.
  * @param api_s Target for the parsed Document_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void document_parse (json_t *root, Document_s *api_s, tg_res *res);
 
@@ -181,8 +154,6 @@ void document_parse (json_t *root, Document_s *api_s, tg_res *res);
  * @param root Json object containing a Sticker type.
  * @param api_s Target for the parsed Sticker_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void sticker_parse (json_t *root, Sticker_s *api_s, tg_res *res);
 
@@ -193,8 +164,6 @@ void sticker_parse (json_t *root, Sticker_s *api_s, tg_res *res);
  * @param root Json object containing a Video type.
  * @param api_s Target for the parsed Video_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void video_parse (json_t *root, Video_s *api_s, tg_res *res);
 
@@ -205,8 +174,6 @@ void video_parse (json_t *root, Video_s *api_s, tg_res *res);
  * @param root Json object containing a Voice type.
  * @param api_s Target for the parsed Voice_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void voice_parse (json_t *root, Voice_s *api_s, tg_res *res);
 
@@ -217,8 +184,6 @@ void voice_parse (json_t *root, Voice_s *api_s, tg_res *res);
  * @param root Json object containing a Contact type.
  * @param api_s Target for the parsed Contact_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void contact_parse (json_t *root, Contact_s *api_s, tg_res *res);
 
@@ -229,8 +194,6 @@ void contact_parse (json_t *root, Contact_s *api_s, tg_res *res);
  * @param root Json object containing a Location type.
  * @param api_s Target for the parsed Location_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void location_parse (json_t *root, Location_s *api_s, tg_res *res);
 
@@ -241,8 +204,6 @@ void location_parse (json_t *root, Location_s *api_s, tg_res *res);
  * @param root Json object containing a Venue type.
  * @param api_s Target for the parsed Venue_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void venue_parse (json_t *root, Venue_s *api_s, tg_res *res);
 
@@ -253,8 +214,6 @@ void venue_parse (json_t *root, Venue_s *api_s, tg_res *res);
  * @param root Json object containing a UserProfilePhotos type.
  * @param api_s Target for the parsed UserProfilePhotos_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *res);
 
@@ -265,8 +224,6 @@ void userprofilephotos_parse (json_t *root, UserProfilePhotos_s *api_s, tg_res *
  * @param root Json object containing a File type.
  * @param api_s Target for the parsed File_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void file_parse (json_t *root, File_s *api_s, tg_res *res);
 
@@ -307,8 +264,6 @@ void choseninlineresult_parse (json_t *root, ChosenInlineResult_s *api_s, tg_res
  * @param root Json object containing a Game type.
  * @param api_s Target for the parsed Game_s.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void game_parse (json_t *root, Game_s *api_s, tg_res *res);
 
@@ -319,8 +274,6 @@ void game_parse (json_t *root, Game_s *api_s, tg_res *res);
  * @param root Json object containing an Animation type.
  * @param api_s Target for the parsed Animation_ss.
  * @param res Error Object.
- *
- * @returns 0 on success and 1 on failure (Check tg_res).
  */
 void animation_parse (json_t *root, Animation_s *api_s, tg_res *res);
 
