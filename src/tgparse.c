@@ -222,6 +222,9 @@ void Update_free (Update_s *api_s, size_t arr_length)
         OBJ_FREE (api_s[i].edited_message, Message_free);
         OBJ_FREE (api_s[i].channel_post, Message_free);
         OBJ_FREE (api_s[i].edited_channel_post, Message_free);
+        OBJ_FREE (api_s[i].inline_query, InlineQuery_free);
+        OBJ_FREE (api_s[i].chosen_inline_result, ChosenInlineResult_free);
+        OBJ_FREE (api_s[i].callback_query, CallbackQuery_free);
     }
 
     free (api_s);
